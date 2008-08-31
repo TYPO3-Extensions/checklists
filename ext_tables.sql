@@ -94,6 +94,7 @@ CREATE TABLE tx_checklists_instances (
 	fe_group int(11) DEFAULT '0' NOT NULL,
 	title varchar(255) DEFAULT '' NOT NULL,
 	notes text,
+	results text,
 	checklists_id int(11) DEFAULT '0' NOT NULL,
 	
 	PRIMARY KEY (uid),

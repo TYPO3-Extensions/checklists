@@ -44,33 +44,52 @@ class tx_checklists_pi1 extends tslib_pibase {
 	var $pi_checkCHash = true;
 	
 	/**
-	 * The main method of the PlugIn
+	 * The main method dispatches the generation of the content to the relevant method given the view parameter
+	 * The default view is the list view
 	 *
-	 * @param	string		$content: The PlugIn content
-	 * @param	array		$conf: The PlugIn configuration
-	 * @return	The content that is displayed on the website
+	 * @param	string		$content: The plugin's content
+	 * @param	array		$conf: The plugin's TS configuration
+	 *
+	 * @return	string		The content to be displayed on the website
 	 */
-	function main($content, $conf) {
+	public function main($content, $conf) {
 		$this->conf = $conf;
-		$this->pi_setPiVarDefaults();
+//		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
-		
-	
-		$content='
-			<strong>This is a few paragraphs:</strong><br />
-			<p>This is line 1</p>
-			<p>This is line 2</p>
-	
-			<h3>This is a form:</h3>
-			<form action="'.$this->pi_getPageLink($GLOBALS['TSFE']->id).'" method="POST">
-				<input type="text" name="'.$this->prefixId.'[input_field]" value="'.htmlspecialchars($this->piVars['input_field']).'">
-				<input type="submit" name="'.$this->prefixId.'[submit_button]" value="'.htmlspecialchars($this->pi_getLL('submit_button_label')).'">
-			</form>
-			<br />
-			<p>You can click here to '.$this->pi_linkToPage('get to this page again',$GLOBALS['TSFE']->id).'</p>
-		';
+
+		if (empty($this->piVars['showUid'])) {
+			$content = $this->listView();
+		}
+		else {
+			$content = $this->singleView($this->piVars['showUid']);
+		}
 	
 		return $this->pi_wrapInBaseClass($content);
+	}
+
+	/**
+	 * This method displays a list of all checklist instances
+	 *
+	 * @return	string	HTML content to display
+	 */
+	protected function listView() {
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', '1 = 1 '.$this->cObj->enableFields('tx_checklists_instances'), '', 'title');
+		$content = '<ul>';
+		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+			$content .= '<li>'.$row['title'].'</li>';
+		}
+		$content .= '</ul>';
+		return $content;
+	}
+
+	/**
+	 * This method displays a single checklist instance
+	 *
+	 * @param	integer		$id: primary key of the checklist instance to display
+	 *
+	 * @return	string		HTML content to display
+	 */
+	protected function singleView($id) {
 	}
 }
 

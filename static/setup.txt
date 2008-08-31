@@ -1,0 +1,2 @@
+plugin.tx_checklists_pi1 {
+}
