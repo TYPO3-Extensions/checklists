@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>database</type>
+		<description>Language labels for database tables/fields belonging to extension 'checklists'</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="tx_checklists_lists">Checklists</label>
+			<label index="tx_checklists_lists.title">Title</label>
+			<label index="tx_checklists_lists.description">Description</label>
+			<label index="tx_checklists_lists.groups">Item Groups</label>
+			<label index="tx_checklists_itemgroups">Checklists Item Groups</label>
+			<label index="tx_checklists_itemgroups.title">Title</label>
+			<label index="tx_checklists_itemgroups.description">Description</label>
+			<label index="tx_checklists_itemgroups.items">Group items</label>
+			<label index="tx_checklists_items">Checklists Items</label>
+			<label index="tx_checklists_items.title">Title</label>
+			<label index="tx_checklists_items.description">Description</label>
+			<label index="tx_checklists_instances">Checklists Instances</label>
+			<label index="tx_checklists_instances.title">Title</label>
+			<label index="tx_checklists_instances.notes">Notes</label>
+			<label index="tx_checklists_instances.checklists_id">Checklist</label>
+			<label index="tt_content.list_type_pi1">Checklists</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="tx_checklists_lists">Checklists</label>
+			<label index="tx_checklists_lists.title">Titre</label>
+			<label index="tx_checklists_lists.description">Description</label>
+			<label index="tx_checklists_lists.groups">Groupes d'éléments</label>
+			<label index="tx_checklists_itemgroups">Groupes d'éléments de checklists</label>
+			<label index="tx_checklists_itemgroups.title">Titre</label>
+			<label index="tx_checklists_itemgroups.description">Description</label>
+			<label index="tx_checklists_itemgroups.items">Eléments du groupe</label>
+			<label index="tx_checklists_items">Eléments de checklists</label>
+			<label index="tx_checklists_items.title">Titre</label>
+			<label index="tx_checklists_items.description">Description</label>
+			<label index="tx_checklists_instances">Instances de checklists</label>
+			<label index="tx_checklists_instances.title">Titre</label>
+			<label index="tx_checklists_instances.notes">Notes</label>
+			<label index="tx_checklists_instances.checklists_id">Checklist</label>
+			<label index="tt_content.list_type_pi1">Checklists</label>
+		</languageKey>
+	</data>
+</T3locallang>
