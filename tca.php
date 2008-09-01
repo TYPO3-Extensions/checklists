@@ -82,7 +82,11 @@ $TCA['tx_checklists_lists'] = array (
 								'newRecordLinkAddTitle' => '1',
 								'newRecordLinkPosition' => 'top',
 								'useCombination'        => '0',
-							)
+							),
+				'behaviour' => array(
+								'localizationMode' => 'select',
+								'localizeChildrenAtParentLocalization' => 1
+				)
 			)
 		),
 	),
@@ -177,7 +181,11 @@ $TCA['tx_checklists_itemgroups'] = array (
 								'newRecordLinkAddTitle' => '1',
 								'newRecordLinkPosition' => 'top',
 								'useCombination'        => '0',
-							)
+							),
+				'behaviour' => array(
+								'localizationMode' => 'select',
+								'localizeChildrenAtParentLocalization' => 1
+				)
 			)
 		),
 		'parentid' => array (		

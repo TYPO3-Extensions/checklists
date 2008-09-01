@@ -76,7 +76,8 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', '1 = 1 '.$this->cObj->enableFields('tx_checklists_instances'), '', 'title');
 		$content = '<ul>';
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-			$content .= '<li>'.$row['title'].'</li>';
+			$link = $this->pi_linkTP($row['title'], array($this->prefixId.'[showUid]' => $row['uid']), 1);
+			$content .= '<li>'.$link.'</li>';
 		}
 		$content .= '</ul>';
 		return $content;
@@ -90,6 +91,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 * @return	string		HTML content to display
 	 */
 	protected function singleView($id) {
+		return 'Checklist: '.$this->piVars['showUid'];
 	}
 }
 
