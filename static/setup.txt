@@ -1,2 +1,6 @@
 plugin.tx_checklists_pi1 {
+	listView {
+		allWrap.wrap = <ul>|</ul>
+		itemWrap.wrap = <li>|</li>
+	}
 }

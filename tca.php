@@ -407,6 +407,12 @@ $TCA['tx_checklists_instances'] = array (
 				'type' => 'passthrough'
 			)
 		),
+		'status' => array (		
+			'config' => array (
+				'type' => 'passthrough'
+			)
+		),
+// TODO: add language condition in select config
 		'checklists_id' => array (		
 			'exclude' => 0,		
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.checklists_id',		
