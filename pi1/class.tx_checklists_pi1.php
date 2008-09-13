@@ -74,13 +74,20 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 * @return	string	HTML content to display
 	 */
 	protected function listView() {
-			// Get the list of all checklist instances, depending on language and enable fields
-		$rows = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_instances', '', '', 'title');
+			// Get the list of all checklist instances, for a given page or all
+		if (empty($this->cObj->data['pages'])) {
+			$where = '';
+		}
+		else {
+			$where = "pid = '".$this->cObj->data['pages']."'";
+		}
+		$rows = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
 			// Display the list of checklist instances
 		$instanceList = '';
 		foreach ($rows as $aRow) {
+			$icon = $this->cObj->cObjGetSingle($this->conf['statusDisplay'], $this->conf['statusDisplay.']);
 			$link = $this->pi_linkTP($aRow['title'], array($this->prefixId.'[showUid]' => $aRow['uid']), 1);
-			$instanceList .= $this->cObj->stdWrap($link, $this->conf['listView.']['itemWrap.']);
+			$instanceList .= $this->cObj->stdWrap($icon.$link, $this->conf['listView.']['itemWrap.']);
 		}
 		$content = $this->cObj->stdWrap($instanceList, $this->conf['listView.']['allWrap.']);
 		return $content;
@@ -95,14 +102,17 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	protected function singleView($id) {
 			// Get the record for the corresponding checklist instance
-		$instance = $this->pi_getRecord('tx_checklists_instances', $id);
-		if (!empty($instance)) {
-			$instance = $GLOBALS['TSFE']->sys_page->getRecordOverlay('tx_checklists_instances', $instance, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
-			if ($instance !== false) {
-				t3lib_div::debug($instance);
-			}
+		$instance = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
+t3lib_div::debug($instance);
+		if (count($instance) == 0) {
+			// No record found or no translation, etc.
 		}
-		return 'Checklist: '.$this->piVars['showUid'];
+		else {
+			$row = $instance[0];
+				// Get the information about the checklist the instance is derived from
+			$list = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$row['checklists_id']."'");
+t3lib_div::debug($list);
+		}
 	}
 }
 

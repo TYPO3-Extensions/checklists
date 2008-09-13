@@ -3,4 +3,19 @@ plugin.tx_checklists_pi1 {
 		allWrap.wrap = <ul>|</ul>
 		itemWrap.wrap = <li>|</li>
 	}
+	statusDisplay = CASE
+	statusDisplay {
+		key.field = status
+		1 = IMAGE
+		1.file = EXT:checklists/res/icons/complete.png
+		1.params = class="statusIcon"
+		default = IMAGE
+		default.file = EXT:checklists/res/icons/incomplete.png
+		default.params = class="statusIcon"
+	}
+	_CSS_DEFAULT_STYLE (
+		.statusIcon {
+			vertical-align: middle;
+		}
+	)
 }
