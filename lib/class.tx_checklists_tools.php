@@ -188,70 +188,89 @@ class tx_checklists_tools {
 	 * @param	string		$OLmodeOverlay mode. If "hideNonTranslated" then records without translation will not be returned un-translated but unset (and return value is false)
 	 * @return	array		Returns the full overlaid recordset. If $OLmode is "hideNonTranslated" then some records may be missing if no translation was found.
 	 */
-	protected function overlayRecordSet($table, $recordset, $sys_language_content, $OLmode = '') {
+	public function overlayRecordSet($table, $recordset, $sys_language_content, $OLmode = '') {
 
-			// Test with the first row, if uid and pid fields are present
+			// Test with the first row if uid and pid fields are present
 		if (!empty($recordset[0]['uid']) && !empty($recordset[0]['pid'])) {
+
 				// Test if the table has a TCA definition
 			if (isset($GLOBALS['TCA'][$table])) {
 				$tableCtrl = $TCA[$table]['ctrl'];
+
 					// Test if the TCA definition includes translation information
 				if ($tableCtrl['languageField'] && $tableCtrl['transOrigPointerField']) {
-					if ($tableCtrl['transOrigPointerTable']) {
-						// TODO: Handle overlays stored in separate table (see Olly's patch)
-						// In the meantime, return recordset unchanged
-						return $recordset;
-					}
-					else {
-							// Will try to overlay a record only if the sys_language_content value is larger than zero.
-						if ($sys_language_content > 0) {
 
-								// Must be default language or [All], otherwise no overlaying:
-							if ($row[$TCA[$table]['ctrl']['languageField']]<=0)	{
+						// Test with the first row if languageField is present
+					if (!empty($recordset[0][$tableCtrl['languageField']])) {
+						if ($tableCtrl['transOrigPointerTable']) {
+							// TODO: Handle overlays stored in separate table (see Olly's patch)
+							// In the meantime, return recordset unchanged
+							return $recordset;
+						}
+						else {
+								// Filter out records that are not in the default or [ALL] language, should there be any
+							$filteredRecordset = array();
+							foreach ($recordset as $row) {
+								if ($row[$tableCtrl['languageField']] <= 0) {
+									$filteredRecordset[] = $row;
+								}
+							}
+								// Will try to overlay a record only if the sys_language_content value is larger than zero,
+								// that is, it is not default or [ALL] language
+							if ($sys_language_content > 0) {
+									// Assemble a list of uid's for getting the overlays,
+									// but only from the filtered recordset
+								$uidList = array();
+								foreach ($filteredRecordset as $row) {
+									$uidList[] = $row['uid'];
+								}
 
-									// Select overlay record:
+									// Select overlays for all records
 								$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery(
 									'*',
 									$table,
-									'pid='.intval($row['pid']).
-										' AND '.$TCA[$table]['ctrl']['languageField'].'='.intval($sys_language_content).
-										' AND '.$TCA[$table]['ctrl']['transOrigPointerField'].'='.intval($row['uid']).
-										$this->enableFields($table),
-									'',
-									'',
-									'1'
+										$tableCtrl['languageField'].' = '.intval($sys_language_content).
+										' AND '.$tableCtrl['transOrigPointerField'].' = '.intval($row['uid']).
+										' AND '.self::getEnableFieldsCondition($table)
 								);
-								$olrow = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-								$GLOBALS['TYPO3_DB']->sql_free_result($res);
-								$this->versionOL($table,$olrow);
-
-									// Merge record content by traversing all fields:
-								if (is_array($olrow))	{
-									foreach($row as $fN => $fV)	{
-										if ($fN!='uid' && $fN!='pid' && isset($olrow[$fN]))	{
-	
-											if ($GLOBALS['TSFE']->TCAcachedExtras[$table]['l10n_mode'][$fN]!='exclude'
-													&& ($GLOBALS['TSFE']->TCAcachedExtras[$table]['l10n_mode'][$fN]!='mergeIfNotBlank' || strcmp(trim($olrow[$fN]),'')))	{
-												$row[$fN] = $olrow[$fN];
-											}
-										} elseif ($fN=='uid')	{
-											$row['_LOCALIZED_UID'] = $olrow['uid'];
-										}
-									}
-								} elseif ($OLmode==='hideNonTranslated' && $row[$TCA[$table]['ctrl']['languageField']]==0)	{	// Unset, if non-translated records should be hidden. ONLY done if the source record really is default language and not [All] in which case it is allowed.
-									unset($row);
+									// Arrange overlay records according to transOrigPointerField, so that it's easy to relate them to the originals
+									// This structure is actually a 2-dimensional array, with the pid as the second key
+									// Because of versioning, there may be several overlays for a given original and matching the pid too
+									// ensures that we are refering to the correct overlay
+								$overlays = array();
+								while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+									if (!isset($overlays[$row[$tableCtrl['transOrigPointerField']]])) $overlays[$row[$tableCtrl['transOrigPointerField']]] = array();
+									$overlays[$row[$tableCtrl['transOrigPointerField']]][$row['pid']] = $row;
 								}
 
-								// Otherwise, check if sys_language_content is different from the value of the record - that means a japanese site might try to display french content.
-							} elseif ($sys_language_content!=$row[$TCA[$table]['ctrl']['languageField']])	{
-								unset($row);
+									// Now loop on the filtered recordset and try to overlay each record
+								$overlaidRecordset = array();
+								foreach ($filteredRecordset as $row) {
+										// An overlay exists, apply it
+									if (isset($overlays[$row['uid']][$row['pid']])) {
+										$overlaidRecordset[] = self::overlaySingleRecord($table, $row, $overlays[$row['uid']][$row['pid']]);
+									}
+										// No overlay exists
+									else {
+											// Take original record, only if non-translated are not hidden, or if language is [All]
+										if ($OLmode != 'hideNonTranslated' || $row[$tableCtrl['languageField']] == -1) {
+											$overlaidRecordset[] = $row;
+										}
+									}
+								}
+									// Return the overlaid recordset
+								return $overlaidRecordset;
 							}
-						} else {
-								// When default language is displayed, we never want to return a record carrying another language!:
-							if ($row[$TCA[$table]['ctrl']['languageField']]>0)	{
-								unset($row);
+							else {
+									// When default language is displayed, we never want to return a record carrying another language!
+									// Return the filtered recordset
+								return $filteredRecordset;
 							}
 						}
+					}
+						// Provided recordset does not contain languageField field, return recordset unchanged
+					else {
+						return $recordset;
 					}
 				}
 					// No appropriate language fields defined in TCA, return recordset unchanged
@@ -264,8 +283,32 @@ class tx_checklists_tools {
 				return $recordset;
 			}
 		}
+			// Recordset did not contain uid or pid field, return recordset unchanged
+		else {
+			return $recordset;
+		}
+	}
 
-		return $row;
+	/**
+	 * This method takes a record and its overlay and performs the overlay according to active translation rules
+	 *
+	 * @param	string	$table: name of the table for which the operation is taking place
+	 * @param	array	$record: record to overlay
+	 * @param	array	$overlay: overlay of the record
+	 * @return	array	Overlaid record
+	 */
+	protected function overlaySingleRecord($table, $record, $overlay) {
+		$overlaidRecord = $row;
+		$overlaidRecord['_LOCALIZED_UID'] = $overlay['uid'];
+		foreach($record as $key => $value) {
+			if ($key != 'uid' && $key != 'pid' && isset($overlay[$key])) {
+				if ($GLOBALS['TSFE']->TCAcachedExtras[$table]['l10n_mode'][$key] != 'exclude'
+						&& ($GLOBALS['TSFE']->TCAcachedExtras[$table]['l10n_mode'][$key] != 'mergeIfNotBlank' || strcmp(trim($overlay[$key]), ''))) {
+					$overlaidRecord[$key] = $overlay[$key];
+				}
+			}
+		}
+		return $overlaidRecord;
 	}
 }
 
