@@ -62,7 +62,7 @@ class tx_checklists_tools {
 			// Make sure the list of selected fields includes "uid", "pid" and language fields so that language overlays can be gotten properly
 			// If these do not exist in the queried table, the recordset is returned as is, without overlay
 		try {
-			$selectFields = $this->selectOverlayFields();
+			$selectFields = self::selectOverlayFields($fromTable, $selectFields);
 			$doOverlays = true;
 		}
 		catch (Exception $e) {
@@ -78,8 +78,8 @@ class tx_checklists_tools {
 		}
 
 			// If we have both a uid and a pid field, we can proceed with overlaying the records
-		if ($hasUidField && $hasPidField) {
-			$records = $this->overlayRecordSet($fromTable, $records, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
+		if ($doOverlays) {
+			$records = self::overlayRecordSet($fromTable, $records, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
 		}
 		return $records;
 	}
@@ -122,13 +122,14 @@ class tx_checklists_tools {
 	 * Basically it calls on the method provided by tslib_content, but without the " AND " in front
 	 *
 	 * @param	string		$table: name of the table to build the condition for
+	 * @param	boolean		$showHidden: If set, then you want NOT to filter out hidden records. Otherwise hidden record are filtered based on the current preview settings.
 	 * @return	string		SQL to add to the WHERE clause (without "AND")
 	 */
-	protected function getEnableFieldsCondition($table) {
+	protected function getEnableFieldsCondition($table, $showHidden = 0) {
 		$enableCondition = '';
 			// First check if table has a TCA ctrl section, otherwise t3lib_page::enableFields() will die() (stupid thing!)
 		if (isset($GLOBALS['TCA'][$table]['ctrl'])) {
-			$enableCondition = $this->cObj->enableFields($table);
+			$enableCondition = $GLOBALS['TSFE']->sys_page->enableFields($table, $show_hidden ? $show_hidden : ($table == 'pages' ? $GLOBALS['TSFE']->showHiddenPage : $GLOBALS['TSFE']->showHiddenRecords));
 				// If an enable clause was returned, strip the first ' AND '
 			if (!empty($enableCondition)) {
 				$enableCondition = substr($enableCondition, strlen(' AND '));
@@ -155,7 +156,7 @@ class tx_checklists_tools {
 		$hasPidField = strpos($selectFields, 'pid');
 		$hasLanguageField = strpos($selectFields, $languageField);
 		if ($hasUidField === false || $hasPidField === false || $hasLanguageField === false) {
-			$availableFields = $GLOBALS['TYPO3_DB']->admin_get_fields($fromTable);
+			$availableFields = $GLOBALS['TYPO3_DB']->admin_get_fields($table);
 			if (isset($availableFields['uid'])) {
 				if ($selectFields != '*') $select .= ', uid';
 				$hasUidField = true;
@@ -195,13 +196,13 @@ class tx_checklists_tools {
 
 				// Test if the table has a TCA definition
 			if (isset($GLOBALS['TCA'][$table])) {
-				$tableCtrl = $TCA[$table]['ctrl'];
+				$tableCtrl = $GLOBALS['TCA'][$table]['ctrl'];
 
 					// Test if the TCA definition includes translation information
 				if ($tableCtrl['languageField'] && $tableCtrl['transOrigPointerField']) {
 
 						// Test with the first row if languageField is present
-					if (!empty($recordset[0][$tableCtrl['languageField']])) {
+					if (isset($recordset[0][$tableCtrl['languageField']])) {
 						if ($tableCtrl['transOrigPointerTable']) {
 							// TODO: Handle overlays stored in separate table (see Olly's patch)
 							// In the meantime, return recordset unchanged
@@ -215,6 +216,7 @@ class tx_checklists_tools {
 									$filteredRecordset[] = $row;
 								}
 							}
+
 								// Will try to overlay a record only if the sys_language_content value is larger than zero,
 								// that is, it is not default or [ALL] language
 							if ($sys_language_content > 0) {
