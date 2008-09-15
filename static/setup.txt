@@ -1,4 +1,5 @@
 plugin.tx_checklists_pi1 {
+	useNewOverlays = 0
 	listView {
 		allWrap.wrap = <ul>|</ul>
 		itemWrap.wrap = <li>|</li>

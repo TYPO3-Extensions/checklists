@@ -28,7 +28,7 @@
  */
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(t3lib_extMgm::extPath('checklists', 'lib/class.tx_checklists_tools.php'));
+require_once(t3lib_extMgm::extPath('overlays', 'class.tx_overlays.php'));
 
 
 /**
@@ -81,7 +81,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 		else {
 			$where = "pid = '".$this->cObj->data['pages']."'";
 		}
-		$rows = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
+		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
 			// Display the list of checklist instances
 		$instanceList = '';
 		foreach ($rows as $aRow) {
@@ -101,18 +101,97 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 * @return	string		HTML content to display
 	 */
 	protected function singleView($id) {
+		$content = '';
+			// Test output to verify whether new overlay mechanism is active or not
+		if ($this->conf['useNewOverlays']) {
+			$content .= '<p><em>New overlay mechanism is active.</em></p>';
+		}
+		else {
+			$content .= '<p><em>New overlay mechanism is inactive.</em></p>';
+		}
+
 			// Get the record for the corresponding checklist instance
-		$instance = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
-t3lib_div::debug($instance);
+//		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
+		$instance = $this->getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
 		if (count($instance) == 0) {
 			// No record found or no translation, etc.
 		}
 		else {
-			$row = $instance[0];
+			$instanceInfo = $instance[0];
+			$content .= '<h2>'.$instanceInfo['title'].'</h2>';
+			if (!empty($instanceInfo['notes'])) $content .= '<p>'.nl2br($instanceInfo['notes']).'</p>';
 				// Get the information about the checklist the instance is derived from
-			$list = tx_checklists_tools::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$row['checklists_id']."'");
-t3lib_div::debug($list);
+//			$list = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
+			$list = $this->getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
+			if (count($list) == 0) {
+				// No record found or no translation, etc.
+			}
+			else {
+				$listInfo = $list[0];
+					// Get all the groups of the given checklist
+//				$groups = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
+				$groups = $this->getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
+					// Get the uid's of all groups, in order to get their related items
+				$groupUids = array();
+				foreach ($groups as $row) {
+					$groupUids[] = $row['uid'];
+				}
+				$items  = $this->getAllRecordsForTable('*', 'tx_checklists_items', "parentid IN (".implode(', ', $groupUids).") AND parenttable = 'tx_checklists_itemgroups'", '', 'sorting');
+				if (count($items) == 0) {
+					// No record found or no translation, etc.
+				}
+				else {
+						// Group items by parent id, so that they can be related to their group easily
+					$sortedItems = array();
+					foreach ($items as $row) {
+						$parentId = $row['parentid'];
+						if (!isset($sortedItems[$parentId])) $sortedItems[$parentId] = array();
+						$sortedItems[$parentId][] = $row;
+					}
+						// Display groups with nested items
+					foreach ($groups as $aGroup) {
+						$content .= '<h3>'.$aGroup['title'].'</h3>';
+						if (isset($aGroup['_LOCALIZED_UID'])) {
+							$realGroupId = $aGroup['_LOCALIZED_UID'];
+						}
+						else {
+							$realGroupId = $aGroup['uid'];
+						}
+						if (isset($sortedItems[$realGroupId])) {
+							$content .= '<dl>';
+							foreach ($sortedItems[$realGroupId] as $anItem) {
+								$content .= '<dt>'.$anItem['title'].'</dt>';
+								if (!empty($anItem['description'])) {
+									$content .= '<dd>'.nl2br($anItem['description']).'</dd>';
+								}
+							}
+							$content .= '</dl>';
+						}
+					}
+				}
+			}
 		}
+		return $content;
+	}
+
+	/**
+	 * This is a temporary wrapper method for testing the new and old overlay methods
+	 */
+	private function getAllRecordsForTable($selectFields, $fromTable, $whereClause, $groupBy = '', $orderBy = '', $limit = '') {
+		if ($this->conf['useNewOverlays']) {
+			$recordset = tx_overlays::getAllRecordsForTable($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
+		}
+		else {
+			$recordset = array();
+			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
+			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
+				$overlay = $GLOBALS['TSFE']->sys_page->getRecordOverlay($fromTable, $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
+				if ($overlay !== false) {
+					$recordset[] = $overlay;
+				}
+			}
+		}
+		return $recordset;
 	}
 }
 
