@@ -119,7 +119,7 @@ class tx_checklists_tools {
 
 	/**
 	 * This method returns the condition on enable fields for the given table
-	 * Basically it calls on the method provided by tslib_content, but without the " AND " in front
+	 * Basically it calls on the method provided by t3lib_page, but without the " AND " in front
 	 *
 	 * @param	string		$table: name of the table to build the condition for
 	 * @param	boolean		$showHidden: If set, then you want NOT to filter out hidden records. Otherwise hidden record are filtered based on the current preview settings.
@@ -182,6 +182,7 @@ class tx_checklists_tools {
 
 	/**
 	 * Creates language-overlay for records in general (where translation is found in records from the same table)
+	 * This is originally copied from t3lib_page::getRecordOverlay()
 	 *
 	 * @param	string		$table: Table name
 	 * @param	array		$recordset: Full recordset to overlay. Must containt uid, pid and $table]['ctrl']['languageField']
@@ -293,6 +294,7 @@ class tx_checklists_tools {
 
 	/**
 	 * This method takes a record and its overlay and performs the overlay according to active translation rules
+	 * This piece of code is extracted from t3lib_page::getRecordOverlay()
 	 *
 	 * @param	string	$table: name of the table for which the operation is taking place
 	 * @param	array	$record: record to overlay
