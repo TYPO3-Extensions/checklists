@@ -15,8 +15,16 @@ plugin.tx_checklists_pi1 {
 		default.params = class="statusIcon"
 	}
 	_CSS_DEFAULT_STYLE (
-		.statusIcon {
+		.tx-checklists-pi1 .statusIcon {
 			vertical-align: middle;
+		}
+		.tx-checklists-pi1 dt {
+			font-weight: bold;
+			padding-top: 8px;
+		}
+		.tx-checklists-pi1 dd {
+			font-style: italic;
+			padding-left: 20px;
 		}
 	)
 }
