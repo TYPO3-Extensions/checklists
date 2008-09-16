@@ -177,12 +177,17 @@ class tx_checklists_pi1 extends tslib_pibase {
 	/**
 	 * This is a temporary wrapper method for testing the new and old overlay methods
 	 */
-	private function getAllRecordsForTable($selectFields, $fromTable, $whereClause, $groupBy = '', $orderBy = '', $limit = '') {
+	private function getAllRecordsForTable($selectFields, $fromTable, $whereClause = '', $groupBy = '', $orderBy = '', $limit = '') {
 		if ($this->conf['useNewOverlays']) {
 			$recordset = tx_overlays::getAllRecordsForTable($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
 		}
 		else {
 			$recordset = array();
+			if (isset($GLOBALS['TCA'][$fromTable])) {
+				$enableCondition = $GLOBALS['TSFE']->sys_page->enableFields($fromTable);
+				if (empty($whereClause)) $whereClause = '1 = 1';
+				$whereClause .= $enableCondition;
+			}
 			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 				$overlay = $GLOBALS['TSFE']->sys_page->getRecordOverlay($fromTable, $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
