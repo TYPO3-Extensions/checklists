@@ -57,10 +57,18 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$this->conf = $conf;
 //		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
+t3lib_div::debug($this->piVars);
 
+			// If a checklist form has been submitted, handle the results
+		if (isset($this->piVars['submit'])) {
+			
+		}
+
+			// If no id is defined, display the list of all checklists
 		if (empty($this->piVars['showUid'])) {
 			$content = $this->listView();
 		}
+			// Display the chosen checklist
 		else {
 			$content = $this->singleView($this->piVars['showUid']);
 		}
@@ -149,29 +157,52 @@ class tx_checklists_pi1 extends tslib_pibase {
 						$sortedItems[$parentId][] = $row;
 					}
 						// Display groups with nested items
+					$listContent = '';
 					foreach ($groups as $aGroup) {
-						$content .= '<h3>'.$aGroup['title'].'</h3>';
+						$groupMarkers = array();
+						$groupMarkers['###TITLE###'] = $this->cObj->stdWrap($aGroup['title'], $this->conf['listView.']['group.']['title.']);
+						$groupMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($aGroup['description'], $this->conf['listView.']['group.']['description.']);
+						$groupContent = $this->cObj->substituteMarkerArray($this->conf['listView.']['group.']['layout'], $groupMarkers);
+							// Get the proper uid to find the group's items
 						if (isset($aGroup['_LOCALIZED_UID'])) {
 							$realGroupId = $aGroup['_LOCALIZED_UID'];
 						}
 						else {
 							$realGroupId = $aGroup['uid'];
 						}
+							// Display the group's items
 						if (isset($sortedItems[$realGroupId])) {
-							$content .= '<dl>';
+							$groupItemContents = '';
 							foreach ($sortedItems[$realGroupId] as $anItem) {
-								$content .= '<dt>'.$anItem['title'].'</dt>';
-								if (!empty($anItem['description'])) {
-									$content .= '<dd>'.nl2br($anItem['description']).'</dd>';
-								}
+								$itemMarkers['###CHECKBOX###'] = $this->cObj->stdWrap($anItem['uid'], $this->conf['listView.']['item.']['checkbox.']);
+								$itemMarkers['###TITLE###'] = $this->cObj->stdWrap($anItem['title'], $this->conf['listView.']['item.']['title.']);
+								$itemMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($anItem['description'], $this->conf['listView.']['item.']['description.']);
+								$itemMarkers['###USER###'] = $this->cObj->stdWrap('', $this->conf['listView.']['item.']['user.']);
+								$groupContent .= $this->cObj->substituteMarkerArray($this->conf['listView.']['item.']['layout'], $itemMarkers);
 							}
-							$content .= '</dl>';
 						}
+						$listContent .= $groupContent;
 					}
+					$content .= $this->cObj->stdWrap($listContent, $this->conf['listView.']['listWrap.']);
 				}
+				$content .= $this->cObj->stdWrap($this->pi_getLL('submit'), $this->conf['listView.']['submit.']);
+				$content = $this->cObj->stdWrap($content, $this->conf['listView.']['allWrap.']);
 			}
 		}
 		return $content;
+	}
+
+	/**
+	 * This method stores all the checkboxes that were checked
+	 *
+	 * @return	void
+	 */
+	protected function saveChecks() {
+		// First, get the checklist instance record for updating it
+		// Loop on all submitted checkboxes and set them to done
+		// Check if all items have been completed
+		// Save result to checklist instance
+		// Save to translations too, so that status is in sync
 	}
 
 	/**

@@ -1,8 +1,28 @@
 plugin.tx_checklists_pi1 {
 	useNewOverlays = 0
 	listView {
-		allWrap.wrap = <ul>|</ul>
-		itemWrap.wrap = <li>|</li>
+		allWrap {
+			wrap = <div class="checklist"><form name="tx_checklists_pi1" method="post" action="">|</form></div>
+		}
+		listWrap.wrap = <table cellpadding="0" cellspacing="0" border="0">|</table>
+		group {
+			layout = <tr class="group"><td colspan="3">###TITLE######DESCRIPTION###</td></tr>
+			title.wrap = <strong>|</strong><br />
+			description.wrap = <em>|</em>
+			description.required = 1
+		}
+		item {
+			layout = <tr class="item"><td>###CHECKBOX###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
+			checkbox {
+				wrap = <input type="checkbox" name="tx_checklists_pi1[items][|]" value="1" />
+			}
+			title.wrap = <strong>|</strong><br />
+			description.wrap = <em>|</em>
+			description.required = 1
+			user.wrap = |
+			user.ifEmpty = -
+		}
+		submit.wrap = <input type="submit" name="tx_checklists_pi1[submit]" value="|" />
 	}
 	statusDisplay = CASE
 	statusDisplay {
@@ -18,13 +38,13 @@ plugin.tx_checklists_pi1 {
 		.tx-checklists-pi1 .statusIcon {
 			vertical-align: middle;
 		}
-		.tx-checklists-pi1 dt {
-			font-weight: bold;
-			padding-top: 8px;
+		.tx-checklists-pi1 .checklist td {
+			padding: 4px;
+			vertical-align: top;
 		}
-		.tx-checklists-pi1 dd {
-			font-style: italic;
-			padding-left: 20px;
+		.tx-checklists-pi1 tr.group {
+			background-color: #666;
+			color: #fff;
 		}
 	)
 }
