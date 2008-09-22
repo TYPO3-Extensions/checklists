@@ -14,10 +14,10 @@ plugin.tx_checklists_pi1 {
 		item {
 			layout = <tr class="item"><td>###CHECKBOX###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
 			checkbox {
-				wrap = <input type="checkbox" name="tx_checklists_pi1[items][|]" value="1" />
+				dataWrap = <input type="checkbox" name="tx_checklists_pi1[items][{register:item_uid}]" id="tx_checklists_pi1_items_{register:item_uid}" value="1" />
 			}
-			title.wrap = <strong>|</strong><br />
-			description.wrap = <em>|</em>
+			title.dataWrap = <strong><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></strong><br />
+			description.dataWrap = <em><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></em>
 			description.required = 1
 			user.wrap = |
 			user.ifEmpty = -
