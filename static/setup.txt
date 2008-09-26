@@ -1,8 +1,27 @@
 plugin.tx_checklists_pi1 {
-	useNewOverlays = 0
+
+# Default setup for the list view
+
 	listView {
+		allWrap.wrap = <ul class="listView">|</ul>
+		item.wrap = <li>|</li>
+		statusDisplay = CASE
+		statusDisplay {
+			key.data = register:current_list_status
+			1 = IMAGE
+			1.file = EXT:checklists/res/icons/complete.png
+			1.params = class="statusIcon"
+			default = IMAGE
+			default.file = EXT:checklists/res/icons/incomplete.png
+			default.params = class="statusIcon"
+		}
+	}
+
+# Default setup for the single view
+
+	singleView {
 		allWrap {
-			wrap = <div class="checklist"><form name="tx_checklists_pi1" method="post" action="">|</form></div>
+			wrap = <div class="singleView"><form name="tx_checklists_pi1" method="post" action="">|</form></div>
 		}
 		listWrap.wrap = <table cellpadding="0" cellspacing="0" border="0">|</table>
 		group {
@@ -14,31 +33,45 @@ plugin.tx_checklists_pi1 {
 		item {
 			layout = <tr class="item"><td>###CHECKBOX###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
 			checkbox {
-				dataWrap = <input type="checkbox" name="tx_checklists_pi1[items][{register:item_uid}]" id="tx_checklists_pi1_items_{register:item_uid}" value="1" />
+				cObject = CASE
+				cObject {
+					1 = IMAGE
+					1 {
+						file = EXT:checklists/res/icons/complete.png
+						params = class="statusIcon"
+					}
+					default = TEXT
+					default {
+						value = <input type="checkbox" name="tx_checklists_pi1[items][{register:item_uid}]" id="tx_checklists_pi1_items_{register:item_uid}" value="1" />
+						insertData = 1
+					}
+					key.data = register:current_item_status
+				}
 			}
 			title.dataWrap = <strong><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></strong><br />
-			description.dataWrap = <em><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></em>
-			description.required = 1
-			user.wrap = |
-			user.ifEmpty = -
+			description {
+				dataWrap = <em><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></em>
+				required = 1
+			}
+			user {
+				wrap = |
+				ifEmpty = -
+			}
 		}
 		submit.wrap = <input type="submit" name="tx_checklists_pi1[submit]" value="|" />
+		backlink.wrap = <p>|</p>
 	}
-	statusDisplay = CASE
-	statusDisplay {
-		key.field = status
-		1 = IMAGE
-		1.file = EXT:checklists/res/icons/complete.png
-		1.params = class="statusIcon"
-		default = IMAGE
-		default.file = EXT:checklists/res/icons/incomplete.png
-		default.params = class="statusIcon"
-	}
+
+# Default styles
+
 	_CSS_DEFAULT_STYLE (
+		.tx-checklists-pi1 ul.listView {
+			list-style: none;
+		}
 		.tx-checklists-pi1 .statusIcon {
 			vertical-align: middle;
 		}
-		.tx-checklists-pi1 .checklist td {
+		.tx-checklists-pi1 .singleView td {
 			padding: 4px;
 			vertical-align: top;
 		}

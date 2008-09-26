@@ -7,6 +7,7 @@
 	<data type="array">
 		<languageKey index="default" type="array">
 			<label index="submit">Submit</label>
+			<label index="back_to_list">Back to the list</label>
 		</languageKey>
 	</data>
 </T3locallang>

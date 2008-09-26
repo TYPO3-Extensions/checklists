@@ -20,6 +20,8 @@
 *  GNU General Public License for more details.
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
+*
+* $Id$
 ***************************************************************/
 /**
  * [CLASS/FUNCTION INDEX of SCRIPT]
@@ -58,7 +60,6 @@ class tx_checklists_pi1 extends tslib_pibase {
 //		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
 //t3lib_div::debug($this->piVars);
-//t3lib_div::debug($GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column]);
 
 			// If a checklist form has been submitted, handle the results
 		if (isset($this->piVars['submit'])) {
@@ -94,9 +95,10 @@ class tx_checklists_pi1 extends tslib_pibase {
 			// Display the list of checklist instances
 		$instanceList = '';
 		foreach ($rows as $aRow) {
-			$icon = $this->cObj->cObjGetSingle($this->conf['statusDisplay'], $this->conf['statusDisplay.']);
+			$GLOBALS['TSFE']->register['current_list_status'] = $aRow['status'];
+			$icon = $this->cObj->cObjGetSingle($this->conf['listView.']['statusDisplay'], $this->conf['listView.']['statusDisplay.']);
 			$link = $this->pi_linkTP($aRow['title'], array($this->prefixId.'[showUid]' => $aRow['uid']), 1);
-			$instanceList .= $this->cObj->stdWrap($icon.$link, $this->conf['listView.']['itemWrap.']);
+			$instanceList .= $this->cObj->stdWrap($icon.$link, $this->conf['listView.']['item.']);
 		}
 		$content = $this->cObj->stdWrap($instanceList, $this->conf['listView.']['allWrap.']);
 		return $content;
@@ -111,41 +113,37 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	protected function singleView($id) {
 		$content = '';
-			// Test output to verify whether new overlay mechanism is active or not
-		if ($this->conf['useNewOverlays']) {
-			$content .= '<p><em>New overlay mechanism is active.</em></p>';
-		}
-		else {
-			$content .= '<p><em>New overlay mechanism is inactive.</em></p>';
-		}
 
 			// Get the record for the corresponding checklist instance
-//		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
-		$instance = $this->getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
+		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
 		if (count($instance) == 0) {
 			// No record found or no translation, etc.
 		}
 		else {
 			$instanceInfo = $instance[0];
+			if (empty($instanceInfo['results'])) {
+				$results = array();
+			}
+			else {
+				$results = t3lib_div::xml2array($instanceInfo['results']);
+			}
 			$content .= '<h2>'.$instanceInfo['title'].'</h2>';
 			if (!empty($instanceInfo['notes'])) $content .= '<p>'.nl2br($instanceInfo['notes']).'</p>';
 				// Get the information about the checklist the instance is derived from
-//			$list = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
-			$list = $this->getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
+			$list = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
 			if (count($list) == 0) {
 				// No record found or no translation, etc.
 			}
 			else {
 				$listInfo = $list[0];
 					// Get all the groups of the given checklist
-//				$groups = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
-				$groups = $this->getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
+				$groups = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
 					// Get the uid's of all groups, in order to get their related items
 				$groupUids = array();
 				foreach ($groups as $row) {
 					$groupUids[] = $row['uid'];
 				}
-				$items  = $this->getAllRecordsForTable('*', 'tx_checklists_items', "parentid IN (".implode(', ', $groupUids).") AND parenttable = 'tx_checklists_itemgroups'", '', 'sorting');
+				$items  = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_items', "parentid IN (".implode(', ', $groupUids).") AND parenttable = 'tx_checklists_itemgroups'", '', 'sorting');
 				if (count($items) == 0) {
 					// No record found or no translation, etc.
 				}
@@ -164,9 +162,9 @@ class tx_checklists_pi1 extends tslib_pibase {
 					$listContent = '';
 					foreach ($groups as $aGroup) {
 						$groupMarkers = array();
-						$groupMarkers['###TITLE###'] = $this->cObj->stdWrap($aGroup['title'], $this->conf['listView.']['group.']['title.']);
-						$groupMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($aGroup['description'], $this->conf['listView.']['group.']['description.']);
-						$groupContent = $this->cObj->substituteMarkerArray($this->conf['listView.']['group.']['layout'], $groupMarkers);
+						$groupMarkers['###TITLE###'] = $this->cObj->stdWrap($aGroup['title'], $this->conf['singleView.']['group.']['title.']);
+						$groupMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($aGroup['description'], $this->conf['singleView.']['group.']['description.']);
+						$groupContent = $this->cObj->substituteMarkerArray($this->conf['singleView.']['group.']['layout'], $groupMarkers);
 							// Get the proper uid to find the group's items
 						if (isset($aGroup['_LOCALIZED_UID'])) {
 							$realGroupId = $aGroup['_LOCALIZED_UID'];
@@ -178,24 +176,42 @@ class tx_checklists_pi1 extends tslib_pibase {
 						if (isset($sortedItems[$realGroupId])) {
 							$groupItemContents = '';
 							foreach ($sortedItems[$realGroupId] as $anItem) {
+									// Initialise item status
+								if (isset($results[$anItem['uid']])) {
+									$isDone = $results[$anItem['uid']]['status'];
+									$user = $results[$anItem['uid']]['user'];
+								}
+								else {
+									$isDone = 0;
+									$user = '';
+								}
+									// Load some registers used during rendering
 								$GLOBALS['TSFE']->register['item_uid'] = $anItem['uid'];
-								$itemMarkers['###CHECKBOX###'] = $this->cObj->stdWrap('', $this->conf['listView.']['item.']['checkbox.']);
-								$itemMarkers['###TITLE###'] = $this->cObj->stdWrap($anItem['title'], $this->conf['listView.']['item.']['title.']);
-								$itemMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($anItem['description'], $this->conf['listView.']['item.']['description.']);
-								$itemMarkers['###USER###'] = $this->cObj->stdWrap('', $this->conf['listView.']['item.']['user.']);
-								$groupContent .= $this->cObj->substituteMarkerArray($this->conf['listView.']['item.']['layout'], $itemMarkers);
+								$GLOBALS['TSFE']->register['current_item_status'] = $isDone;
+									// Render content for each marker
+								$itemMarkers['###CHECKBOX###'] = $this->cObj->stdWrap($isDone, $this->conf['singleView.']['item.']['checkbox.']);
+								$itemMarkers['###TITLE###'] = $this->cObj->stdWrap($anItem['title'], $this->conf['singleView.']['item.']['title.']);
+								$itemMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($anItem['description'], $this->conf['singleView.']['item.']['description.']);
+								$itemMarkers['###USER###'] = $this->cObj->stdWrap($user, $this->conf['singleView.']['item.']['user.']);
+									// Assemble the content for the group
+								$groupContent .= $this->cObj->substituteMarkerArray($this->conf['singleView.']['item.']['layout'], $itemMarkers);
 							}
 						}
 						$listContent .= $groupContent;
 					}
-					$content .= $this->cObj->stdWrap($listContent, $this->conf['listView.']['listWrap.']);
+					$content .= $this->cObj->stdWrap($listContent, $this->conf['singleView.']['listWrap.']);
 						// After having built a whole list, check that the checklist instance has a properly built results field
-					$this->checkResultsField($instanceInfo, $itemUids);
+						// This is done only if no data was submitted, because a different process happens in that case
+					if (empty($this->piVars['submit'])) {
+						$this->checkResultsField($instanceInfo, $itemUids);
+					}
 				}
-				$content .= $this->cObj->stdWrap($this->pi_getLL('submit'), $this->conf['listView.']['submit.']);
-				$content = $this->cObj->stdWrap($content, $this->conf['listView.']['allWrap.']);
+				$content .= $this->cObj->stdWrap($this->pi_getLL('submit'), $this->conf['singleView.']['submit.']);
+				$content = $this->cObj->stdWrap($content, $this->conf['singleView.']['allWrap.']);
 			}
 		}
+			// Add back to instance list link
+		$content .= $this->cObj->stdWrap($this->pi_linkTP($this->pi_getLL('back_to_list')), $this->conf['singleView.']['backlink.']);
 		return $content;
 	}
 
@@ -234,17 +250,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 		}
 			// Store the updated results list into the instance
 		$updates = array('results' => t3lib_div::array2xml($currentResults));
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$instance['uid']."'", $updates);
-			// Check if the instance has translations, as they must have the same results list
-		$where = $GLOBALS['TCA']['tx_checklists_instances']['ctrl']['transOrigPointerField']." = '".$instance['uid']."' AND pid = '".$instance['pid']."'";
-		$where .= $this->cObj->enableFields('tx_checklists_instances', 1);
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tx_checklists_instances', $where);
-			// Loop on all translations and update them with the same results list
-		if ($res && $GLOBALS['TYPO3_DB']->sql_num_rows($res) > 0) {
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$row['uid']."'", $updates);
-			}
-		}
+		$this->saveToOriginalAndTranslations($instance['uid'], $instance['pid'], $updates);
 	}
 
 	/**
@@ -256,51 +262,65 @@ class tx_checklists_pi1 extends tslib_pibase {
 		// First, get the checklist instance record for updating it
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', "uid = '".$this->piVars['showUid']."'");
 		$instanceInfo = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		// Check if there has already been results stored for that list
+		// Get the results that were already stored for that list
+		// First check if the results list hasn't been initialised beforehand
 		// (this shouldn't happen normally)
 		if (empty($instanceInfo['results'])) {
-			$currentResults = array('items' => array());
+			$currentResults = array();
 		}
 		// If yes, get the results as an array
 		else {
 			$currentResults = t3lib_div::xml2array($instanceInfo['results']);
 		}
+		// If a user is logged it, take its username
+		if (isset($GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column])) {
+			$user = $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column];
+		}
+		else {
+			$user = '';
+		}
 		// Loop on all submitted checkboxes and set them to done
 		foreach ($this->piVars['items'] as $uid => $value) {
-			$currentResults['items'][$uid] = array('status' => 1, 'user' => 'Bob');
+			$currentResults[$uid] = array('status' => 1, 'user' => $user);
 		}
 		// Check if all items have been completed
-		// Save result to checklist instance
-		$results = t3lib_div::array2xml($currentResults);
-//t3lib_div::debug($results);
-//t3lib_div::debug(t3lib_div::xml2array($results));
-//		$GLOBALS['TYPO3_DB']->exec_UPDATEquery();
-		// Save to translations too, so that status is in sync
+		$numItems = count($currentResults);
+		$numItemsDone = 0;
+		foreach ($currentResults as $itemInfo) {
+			if ($itemInfo['status'] == 1) $numItemsDone++;
+		}
+		if ($numItemsDone == $numItems) {
+			$status = 1;
+		}
+		else {
+			$status = 0;
+		}
+		// Save result to checklist instance and translation
+		$updates = array('results' => t3lib_div::array2xml($currentResults), 'status' => $status);
+		$this->saveToOriginalAndTranslations($instanceInfo['uid'], $instanceInfo['pid'], $updates);
 	}
 
 	/**
-	 * This is a temporary wrapper method for testing the new and old overlay methods
+	 * This method is used to save the updated checklist results to the original checklist instance
+	 * and to its translations if any
+	 *
+	 * @param	integer		$uid: primary key of the checklist instance to update (original language)
+	 * @param	integer		$pid: page id where the instance is located
+	 * @param	array		$updates: fields to update
+	 * @return	void
 	 */
-	private function getAllRecordsForTable($selectFields, $fromTable, $whereClause = '', $groupBy = '', $orderBy = '', $limit = '') {
-		if ($this->conf['useNewOverlays']) {
-			$recordset = tx_overlays::getAllRecordsForTable($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
-		}
-		else {
-			$recordset = array();
-			if (isset($GLOBALS['TCA'][$fromTable])) {
-				$enableCondition = $GLOBALS['TSFE']->sys_page->enableFields($fromTable);
-				if (empty($whereClause)) $whereClause = '1 = 1';
-				$whereClause .= $enableCondition;
-			}
-			$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($selectFields, $fromTable, $whereClause, $groupBy, $orderBy, $limit);
+	protected function saveToOriginalAndTranslations($uid, $pid, $updates) {
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$uid."'", $updates);
+			// Check if the instance has translations, as they must have the same results list
+		$where = $GLOBALS['TCA']['tx_checklists_instances']['ctrl']['transOrigPointerField']." = '".$uid."' AND pid = '".$pid."'";
+		$where .= $this->cObj->enableFields('tx_checklists_instances', 1);
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tx_checklists_instances', $where);
+			// Loop on all translations and update them with the same results list
+		if ($res && $GLOBALS['TYPO3_DB']->sql_num_rows($res) > 0) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$overlay = $GLOBALS['TSFE']->sys_page->getRecordOverlay($fromTable, $row, $GLOBALS['TSFE']->sys_language_content, $GLOBALS['TSFE']->sys_language_contentOL);
-				if ($overlay !== false) {
-					$recordset[] = $overlay;
-				}
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$row['uid']."'", $updates);
 			}
 		}
-		return $recordset;
 	}
 }
 
