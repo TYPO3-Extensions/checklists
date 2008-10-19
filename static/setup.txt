@@ -31,7 +31,7 @@ plugin.tx_checklists_pi1 {
 			description.required = 1
 		}
 		item {
-			layout = <tr class="item"><td>###CHECKBOX###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
+			layout = <tr class="item"><td>###CHECKBOX###<br />###UNCHECK###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
 			checkbox {
 				cObject = CASE
 				cObject {
@@ -47,6 +47,9 @@ plugin.tx_checklists_pi1 {
 					}
 					key.data = register:current_item_status
 				}
+			}
+			uncheck {
+				wrap = [|]
 			}
 			title.dataWrap = <strong><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></strong><br />
 			description {

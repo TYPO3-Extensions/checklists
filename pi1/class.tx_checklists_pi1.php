@@ -61,8 +61,8 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$this->pi_loadLL();
 //t3lib_div::debug($this->piVars);
 
-			// If a checklist form has been submitted, handle the results
-		if (isset($this->piVars['submit'])) {
+			// If a checklist form has been submitted (i.e. there is an "items" array), handle the results
+		if (isset($this->piVars['items']) || isset($this->piVars['uncheck'])) {
 			$this->saveChecks();
 		}
 
@@ -190,6 +190,13 @@ class tx_checklists_pi1 extends tslib_pibase {
 								$GLOBALS['TSFE']->register['current_item_status'] = $isDone;
 									// Render content for each marker
 								$itemMarkers['###CHECKBOX###'] = $this->cObj->stdWrap($isDone, $this->conf['singleView.']['item.']['checkbox.']);
+								if ($isDone) {
+									$uncheckLink = $this->pi_linkTP($this->pi_getLL('uncheck'), array($this->prefixId.'[showUid]' => $id, $this->prefixId.'[uncheck]' => $anItem['uid']), 1);
+									$itemMarkers['###UNCHECK###'] = $this->cObj->stdWrap($uncheckLink, $this->conf['singleView.']['item.']['uncheck.']);
+								}
+								else {
+									$itemMarkers['###UNCHECK###'] = '';
+								}
 								$itemMarkers['###TITLE###'] = $this->cObj->stdWrap($anItem['title'], $this->conf['singleView.']['item.']['title.']);
 								$itemMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($anItem['description'], $this->conf['singleView.']['item.']['description.']);
 								$itemMarkers['###USER###'] = $this->cObj->stdWrap($user, $this->conf['singleView.']['item.']['user.']);
@@ -255,6 +262,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 
 	/**
 	 * This method stores all the checkboxes that were checked
+	 * or the single checkbox that was unchecked
 	 *
 	 * @return	void
 	 */
@@ -280,19 +288,28 @@ class tx_checklists_pi1 extends tslib_pibase {
 			$user = '';
 		}
 		// Loop on all submitted checkboxes and set them to done
-		foreach ($this->piVars['items'] as $uid => $value) {
-			$currentResults[$uid] = array('status' => 1, 'user' => $user);
+		if (isset($this->piVars['items'])) {
+			foreach ($this->piVars['items'] as $uid => $value) {
+				$currentResults[$uid] = array('status' => 1, 'user' => $user);
+			}
+			// Check if all items have been completed
+			$numItems = count($currentResults);
+			$numItemsDone = 0;
+			foreach ($currentResults as $itemInfo) {
+				if ($itemInfo['status'] == 1) $numItemsDone++;
+			}
+			if ($numItemsDone == $numItems) {
+				$status = 1;
+			}
+			else {
+				$status = 0;
+			}
 		}
-		// Check if all items have been completed
-		$numItems = count($currentResults);
-		$numItemsDone = 0;
-		foreach ($currentResults as $itemInfo) {
-			if ($itemInfo['status'] == 1) $numItemsDone++;
-		}
-		if ($numItemsDone == $numItems) {
-			$status = 1;
-		}
-		else {
+		// Uncheck the designated item
+		elseif (isset($this->piVars['uncheck'])) {
+			$currentResults[$this->piVars['uncheck']] = array('status' => 0, 'user' => '');
+			// Set the general status to 0
+			// (if an item has been unchecked, the whole list cannot possibly be complete)
 			$status = 0;
 		}
 		// Save result to checklist instance and translation

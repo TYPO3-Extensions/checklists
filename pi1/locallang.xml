@@ -6,6 +6,7 @@
 	</meta>
 	<data type="array">
 		<languageKey index="default" type="array">
+			<label index="uncheck">X</label>
 			<label index="submit">Submit</label>
 			<label index="back_to_list">Back to the list</label>
 		</languageKey>
