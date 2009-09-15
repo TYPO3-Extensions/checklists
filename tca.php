@@ -44,7 +44,7 @@ $TCA['tx_checklists_lists'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
 				'type'    => 'check',
-				'default' => '0'
+				'default' => 0
 			)
 		),
 		'title' => array (		
@@ -52,7 +52,7 @@ $TCA['tx_checklists_lists'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.title',		
 			'config' => array (
 				'type' => 'input',	
-				'size' => '30',	
+				'size' => 30,	
 				'eval' => 'required,trim',
 			)
 		),
@@ -61,8 +61,8 @@ $TCA['tx_checklists_lists'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.description',		
 			'config' => array (
 				'type' => 'text',
-				'cols' => '30',	
-				'rows' => '5',
+				'cols' => 30,	
+				'rows' => 5,
 			)
 		),
 		'groups' => array (		
@@ -73,8 +73,7 @@ $TCA['tx_checklists_lists'] = array (
 				'foreign_table' => 'tx_checklists_itemgroups',
 				'foreign_table_field' => 'parenttable',
 				'foreign_field' => 'parentid',
-				'minitems'   => '0',
-				'maxitems'   => '10',
+				'minitems'   => 0,
 				'appearance' => array(
 								'collapseAll'           => 1,
 								'expandSingle'          => 1,
@@ -144,7 +143,7 @@ $TCA['tx_checklists_itemgroups'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
 				'type'    => 'check',
-				'default' => '0'
+				'default' => 0
 			)
 		),
 		'title' => array (		
@@ -152,7 +151,7 @@ $TCA['tx_checklists_itemgroups'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.title',		
 			'config' => array (
 				'type' => 'input',	
-				'size' => '30',	
+				'size' => 30,	
 				'eval' => 'required,trim',
 			)
 		),
@@ -161,8 +160,8 @@ $TCA['tx_checklists_itemgroups'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.description',		
 			'config' => array (
 				'type' => 'text',
-				'cols' => '30',	
-				'rows' => '5',
+				'cols' => 30,	
+				'rows' => 5,
 			)
 		),
 		'items' => array (		
@@ -173,8 +172,7 @@ $TCA['tx_checklists_itemgroups'] = array (
 				'foreign_table' => 'tx_checklists_items',
 				'foreign_table_field' => 'parenttable',
 				'foreign_field' => 'parentid',
-				'minitems'   => '0',
-				'maxitems'   => '10',
+				'minitems'   => 0,
 				'appearance' => array(
 								'collapseAll'           => 1,
 								'expandSingle'          => 1,
@@ -254,7 +252,7 @@ $TCA['tx_checklists_items'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
 				'type'    => 'check',
-				'default' => '0'
+				'default' => 0
 			)
 		),
 		'title' => array (		
@@ -262,7 +260,7 @@ $TCA['tx_checklists_items'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.title',		
 			'config' => array (
 				'type' => 'input',	
-				'size' => '30',	
+				'size' => 30,	
 				'eval' => 'required,trim',
 			)
 		),
@@ -271,8 +269,8 @@ $TCA['tx_checklists_items'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.description',		
 			'config' => array (
 				'type' => 'text',
-				'cols' => '30',	
-				'rows' => '5',
+				'cols' => 30,	
+				'rows' => 5,
 			)
 		),
 		'parentid' => array (		
@@ -339,7 +337,7 @@ $TCA['tx_checklists_instances'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
 				'type'    => 'check',
-				'default' => '0'
+				'default' => 0
 			)
 		),
 		'starttime' => array (		
@@ -347,11 +345,11 @@ $TCA['tx_checklists_instances'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.starttime',
 			'config'  => array (
 				'type'     => 'input',
-				'size'     => '8',
-				'max'      => '20',
+				'size'     => 8,
+				'max'      => 20,
 				'eval'     => 'date',
-				'default'  => '0',
-				'checkbox' => '0'
+				'default'  => 0,
+				'checkbox' => 0
 			)
 		),
 		'endtime' => array (		
@@ -359,11 +357,11 @@ $TCA['tx_checklists_instances'] = array (
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.endtime',
 			'config'  => array (
 				'type'     => 'input',
-				'size'     => '8',
-				'max'      => '20',
+				'size'     => 8,
+				'max'      => 20,
 				'eval'     => 'date',
-				'checkbox' => '0',
-				'default'  => '0',
+				'default'  => 0,
+				'checkbox' => 0
 				'range'    => array (
 					'upper' => mktime(3, 14, 7, 1, 19, 2038),
 					'lower' => mktime(0, 0, 0, date('m')-1, date('d'), date('Y'))
@@ -389,7 +387,7 @@ $TCA['tx_checklists_instances'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.title',		
 			'config' => array (
 				'type' => 'input',	
-				'size' => '30',	
+				'size' => 30,	
 				'eval' => 'required,trim',
 			)
 		),
@@ -398,8 +396,8 @@ $TCA['tx_checklists_instances'] = array (
 			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.notes',		
 			'config' => array (
 				'type' => 'text',
-				'cols' => '30',	
-				'rows' => '5',
+				'cols' => 30,	
+				'rows' => 5,
 			)
 		),
 		'results' => array (		
