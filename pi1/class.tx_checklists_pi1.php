@@ -193,16 +193,14 @@ class tx_checklists_pi1 extends tslib_pibase {
 						}
 							// Display the group's items
 						if (isset($sortedItems[$realGroupId])) {
-							$groupItemContents = '';
 							foreach ($sortedItems[$realGroupId] as $anItem) {
-									// Initialise item status
+								$itemMarkers = array();
+									// Initialize item status
+								$isDone = 0;
+								$user = '';
 								if (isset($results[$anItem['uid']])) {
 									$isDone = $results[$anItem['uid']]['status'];
 									$user = $results[$anItem['uid']]['user'];
-								}
-								else {
-									$isDone = 0;
-									$user = '';
 								}
 									// Load some registers used during rendering
 								$GLOBALS['TSFE']->register['item_uid'] = $anItem['uid'];
@@ -253,9 +251,9 @@ class tx_checklists_pi1 extends tslib_pibase {
 			// If there are no results yet, initialise array
 		if (empty($instance['results'])) {
 			$currentResults = array();
-		}
+
 			// Otherwise extract array of results from stored XML
-		else {
+		} else {
 			$currentResults = t3lib_div::xml2array($instance['results']);
 				// Get the list of currently stored items
 			$storedUids = array_keys($currentResults);
@@ -286,52 +284,48 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 * @return	void
 	 */
 	protected function saveChecks() {
-		// First, get the checklist instance record for updating it
+			// First, get the checklist instance record for updating it
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', "uid = '".$this->piVars['showUid']."'");
 		$instanceInfo = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
-		// Get the results that were already stored for that list
-		// First check if the results list hasn't been initialised beforehand
-		// (this shouldn't happen normally)
+			// Get the results that were already stored for that list
+			// First check if the results list hasn't been initialised beforehand
+			// (this shouldn't happen normally)
 		if (empty($instanceInfo['results'])) {
 			$currentResults = array();
-		}
-		// If yes, get the results as an array
-		else {
+		
+			// If yes, get the results as an array
+		} else {
 			$currentResults = t3lib_div::xml2array($instanceInfo['results']);
 		}
-		// If a user is logged it, take its username
+			// If a user is logged it, take its username
+		$user = '';
 		if (isset($GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column])) {
 			$user = $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column];
 		}
-		else {
-			$user = '';
-		}
-		// Loop on all submitted checkboxes and set them to done
+			// Loop on all submitted checkboxes and set them to done
 		if (isset($this->piVars['items'])) {
 			foreach ($this->piVars['items'] as $uid => $value) {
 				$currentResults[$uid] = array('status' => 1, 'user' => $user);
 			}
-			// Check if all items have been completed
+				// Check if all items have been completed
 			$numItems = count($currentResults);
 			$numItemsDone = 0;
 			foreach ($currentResults as $itemInfo) {
 				if ($itemInfo['status'] == 1) $numItemsDone++;
 			}
+			$status = 0;
 			if ($numItemsDone == $numItems) {
 				$status = 1;
 			}
-			else {
-				$status = 0;
-			}
-		}
-		// Uncheck the designated item
-		elseif (isset($this->piVars['uncheck'])) {
+
+			// Uncheck the designated item
+		} elseif (isset($this->piVars['uncheck'])) {
 			$currentResults[$this->piVars['uncheck']] = array('status' => 0, 'user' => '');
-			// Set the general status to 0
-			// (if an item has been unchecked, the whole list cannot possibly be complete)
+				// Set the general status to 0
+				// (if an item has been unchecked, the whole list cannot possibly be complete)
 			$status = 0;
 		}
-		// Save result to checklist instance and translation
+			// Save result to checklist instance and translation
 		$updates = array('results' => t3lib_div::array2xml($currentResults), 'status' => $status);
 		$this->saveToOriginalAndTranslations($instanceInfo['uid'], $instanceInfo['pid'], $updates);
 	}
@@ -346,15 +340,15 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 * @return	void
 	 */
 	protected function saveToOriginalAndTranslations($uid, $pid, $updates) {
-		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$uid."'", $updates);
+		$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '" . $uid . "'", $updates);
 			// Check if the instance has translations, as they must have the same results list
-		$where = $GLOBALS['TCA']['tx_checklists_instances']['ctrl']['transOrigPointerField']." = '".$uid."' AND pid = '".$pid."'";
+		$where = $GLOBALS['TCA']['tx_checklists_instances']['ctrl']['transOrigPointerField'] . " = '" . $uid . "' AND pid = '" . $pid . "'";
 		$where .= $this->cObj->enableFields('tx_checklists_instances', 1);
 		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid', 'tx_checklists_instances', $where);
 			// Loop on all translations and update them with the same results list
 		if ($res && $GLOBALS['TYPO3_DB']->sql_num_rows($res) > 0) {
 			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
-				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '".$row['uid']."'", $updates);
+				$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', "uid = '" . $row['uid'] . "'", $updates);
 			}
 		}
 	}
