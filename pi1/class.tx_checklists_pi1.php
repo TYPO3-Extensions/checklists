@@ -45,7 +45,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 	var $scriptRelPath = 'pi1/class.tx_checklists_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey        = 'checklists';	// The extension key.
 	var $pi_checkCHash = true;
-	
+
 	/**
 	 * The main method dispatches the generation of the content to the relevant method given the view parameter
 	 * The default view is the list view
@@ -74,7 +74,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 		else {
 			$content = $this->singleView($this->piVars['showUid']);
 		}
-	
+
 		return $this->pi_wrapInBaseClass($content);
 	}
 
@@ -85,11 +85,9 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	protected function listView() {
 			// Get the list of all checklist instances, for a given page or all
-		if (empty($this->cObj->data['pages'])) {
-			$where = '';
-		}
-		else {
-			$where = "pid = '".$this->cObj->data['pages']."'";
+		$where = '';
+		if (!empty($this->cObj->data['pages'])) {
+			$where = "pid = '" . intval($this->cObj->data['pages']) . "'";
 		}
 		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
 			// Display the list of checklist instances
@@ -130,20 +128,41 @@ class tx_checklists_pi1 extends tslib_pibase {
 			$content .= '<h2>'.$instanceInfo['title'].'</h2>';
 			if (!empty($instanceInfo['notes'])) $content .= '<p>'.nl2br($instanceInfo['notes']).'</p>';
 				// Get the information about the checklist the instance is derived from
-			$list = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '".$instanceInfo['checklists_id']."'");
+			$list = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_lists', "uid = '" . $instanceInfo['checklists_id'] . "'");
+//t3lib_div::debug($list, 'List');
 			if (count($list) == 0) {
 				// No record found or no translation, etc.
 			}
 			else {
 				$listInfo = $list[0];
 					// Get all the groups of the given checklist
-				$groups = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_itemgroups', "parentid = '".$listInfo['uid']."' AND parenttable = 'tx_checklists_lists'", '', 'sorting');
+					// First check if the list was overlaid
+					// TODO: check if it's really needed for translations here
+				$realListId = $listInfo['uid'];
+				if (isset($listInfo['_ORIG_uid'])) {
+					$realListId = $listInfo['_ORIG_uid'];
+				}
+				$where = 'parentid = ' . $realListId . " AND parenttable = 'tx_checklists_lists'";
+				$groups = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_itemgroups', $where, '', 'sorting');
+//t3lib_div::debug($groups, 'Groups');
 					// Get the uid's of all groups, in order to get their related items
 				$groupUids = array();
 				foreach ($groups as $row) {
-					$groupUids[] = $row['uid'];
+					$realGroupId = $row['uid'];
+					if (isset($row['_ORIG_uid'])) {
+						$realGroupId = $row['_ORIG_uid'];
+					}
+					$groupUids[] = $realGroupId;
 				}
-				$items  = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_items', "parentid IN (".implode(', ', $groupUids).") AND parenttable = 'tx_checklists_itemgroups'", '', 'sorting');
+					// Assemble condition on parent records and table
+				$parentCondition = "parentid IN (" . implode(', ', $groupUids) . ") AND parenttable = 'tx_checklists_itemgroups'";
+					// Condition must be extended in case of workspace preview, since new items have their
+					// parentid and parenttable fields set to NULL
+				if ($GLOBALS['TSFE']->sys_page->versioningPreview) {
+					$parentCondition = "(parentid IN (" . implode(', ', $groupUids) . ") OR parentid IS NULL) AND (parenttable = 'tx_checklists_itemgroups' OR parenttable IS NULL)";
+				}
+				$items  = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_items', $parentCondition, '', 'sorting');
+//t3lib_div::debug($items, 'Items');
 				if (count($items) == 0) {
 					// No record found or no translation, etc.
 				}
@@ -166,11 +185,11 @@ class tx_checklists_pi1 extends tslib_pibase {
 						$groupMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($aGroup['description'], $this->conf['singleView.']['group.']['description.']);
 						$groupContent = $this->cObj->substituteMarkerArray($this->conf['singleView.']['group.']['layout'], $groupMarkers);
 							// Get the proper uid to find the group's items
-						if (isset($aGroup['_LOCALIZED_UID'])) {
+						$realGroupId = $aGroup['uid'];
+						if (isset($aGroup['_ORIG_uid'])) {
+							$realGroupId = $aGroup['_ORIG_uid'];
+						} elseif (isset($aGroup['_LOCALIZED_UID'])) {
 							$realGroupId = $aGroup['_LOCALIZED_UID'];
-						}
-						else {
-							$realGroupId = $aGroup['uid'];
 						}
 							// Display the group's items
 						if (isset($sortedItems[$realGroupId])) {
