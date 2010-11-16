@@ -67,12 +67,13 @@ class tx_checklists_pi1 extends tslib_pibase {
 		}
 
 			// If no id is defined, display the list of all checklists
-		if (empty($this->piVars['showUid'])) {
+		$id = intval($this->piVars['showUid']);
+		if (empty($id)) {
 			$content = $this->listView();
-		}
+
 			// Display the chosen checklist
-		else {
-			$content = $this->singleView($this->piVars['showUid']);
+		} else {
+			$content = $this->singleView($id);
 		}
 
 		return $this->pi_wrapInBaseClass($content);
@@ -87,7 +88,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 			// Get the list of all checklist instances, for a given page or all
 		$where = '';
 		if (!empty($this->cObj->data['pages'])) {
-			$where = "pid = '" . intval($this->cObj->data['pages']) . "'";
+			$where = 'pid = ' . intval($this->cObj->data['pages']);
 		}
 		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
 			// Display the list of checklist instances
@@ -113,7 +114,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$content = '';
 
 			// Get the record for the corresponding checklist instance
-		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', "uid = '$id'");
+		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', 'uid = ' . $id);
 		if (count($instance) == 0) {
 			// No record found or no translation, etc.
 		}
