@@ -79,7 +79,6 @@ $TCA['tx_checklists_lists'] = array (
 								'expandSingle'          => 1,
 								'useSortable'           => 1,
 								'newRecordLinkAddTitle' => 1,
-								'newRecordLinkPosition' => 'both',
 								'useCombination'        => 0,
 								'showSynchronizationLink' => 1
 							),
@@ -178,7 +177,6 @@ $TCA['tx_checklists_itemgroups'] = array (
 								'expandSingle'          => 1,
 								'useSortable'           => 1,
 								'newRecordLinkAddTitle' => 1,
-								'newRecordLinkPosition' => 'both',
 								'useCombination'        => 0,
 								'showSynchronizationLink' => 1
 							),
