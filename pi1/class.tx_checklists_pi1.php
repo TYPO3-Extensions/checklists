@@ -87,9 +87,11 @@ class tx_checklists_pi1 extends tslib_pibase {
 	protected function listView() {
 			// Get the list of all checklist instances, for a given page or all
 		$where = '';
+		$referencePage = $GLOBALS['TSFE']->id;
 		if (!empty($this->cObj->data['pages'])) {
-			$where = 'pid = ' . intval($this->cObj->data['pages']);
+			$referencePage = $this->cObj->data['pages'];
 		}
+		$where = 'pid = ' . intval($this->cObj->data['pages']);
 		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
 			// Display the list of checklist instances
 		$instanceList = '';
