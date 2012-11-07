@@ -11,19 +11,19 @@ t3lib_extMgm::allowTableOnStandardPages('tx_checklists_lists');
 
 $TCA['tx_checklists_lists'] = array(
 	'ctrl' => array(
-		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists',		
-		'label'     => 'title',	
+		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists',
+		'label'     => 'title',
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
-		'languageField'            => 'sys_language_uid',	
-		'transOrigPointerField'    => 'l18n_parent',	
+		'languageField'            => 'sys_language_uid',
+		'transOrigPointerField'    => 'l18n_parent',
 		'transOrigDiffSourceField' => 'l18n_diffsource',
 		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
-		'default_sortby' => 'ORDER BY title',	
-		'delete' => 'deleted',	
-		'enablecolumns' => array(		
+		'default_sortby' => 'ORDER BY title',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
@@ -37,20 +37,20 @@ t3lib_extMgm::allowTableOnStandardPages('tx_checklists_itemgroups');
 
 $TCA['tx_checklists_itemgroups'] = array(
 	'ctrl' => array(
-		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups',		
-		'label'     => 'title',	
+		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups',
+		'label'     => 'title',
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
-		'languageField'            => 'sys_language_uid',	
-		'transOrigPointerField'    => 'l18n_parent',	
+		'languageField'            => 'sys_language_uid',
+		'transOrigPointerField'    => 'l18n_parent',
 		'transOrigDiffSourceField' => 'l18n_diffsource',
 		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
 		'shadowColumnsForNewPlaceholders' => 'parentid,parenttable',
-		'sortby' => 'sorting',	
-		'delete' => 'deleted',	
-		'enablecolumns' => array(		
+		'sortby' => 'sorting',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
@@ -64,20 +64,20 @@ t3lib_extMgm::allowTableOnStandardPages('tx_checklists_items');
 
 $TCA['tx_checklists_items'] = array(
 	'ctrl' => array(
-		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items',		
-		'label'     => 'title',	
+		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items',
+		'label'     => 'title',
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
-		'languageField'            => 'sys_language_uid',	
-		'transOrigPointerField'    => 'l18n_parent',	
+		'languageField'            => 'sys_language_uid',
+		'transOrigPointerField'    => 'l18n_parent',
 		'transOrigDiffSourceField' => 'l18n_diffsource',
 		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
 		'shadowColumnsForNewPlaceholders' => 'parentid,parenttable',
-		'sortby' => 'sorting',	
-		'delete' => 'deleted',	
-		'enablecolumns' => array(		
+		'sortby' => 'sorting',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
 			'disabled' => 'hidden',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
@@ -93,22 +93,22 @@ t3lib_extMgm::addToInsertRecords('tx_checklists_instances');
 
 $TCA['tx_checklists_instances'] = array(
 	'ctrl' => array(
-		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances',		
-		'label'     => 'title',	
+		'title'     => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances',
+		'label'     => 'title',
 		'tstamp'    => 'tstamp',
 		'crdate'    => 'crdate',
 		'cruser_id' => 'cruser_id',
-		'languageField'            => 'sys_language_uid',	
-		'transOrigPointerField'    => 'l18n_parent',	
-		'transOrigDiffSourceField' => 'l18n_diffsource',	
+		'languageField'            => 'sys_language_uid',
+		'transOrigPointerField'    => 'l18n_parent',
+		'transOrigDiffSourceField' => 'l18n_diffsource',
 		'versioningWS' => TRUE,
 		'origUid' => 't3_origuid',
-		'default_sortby' => 'ORDER BY title',	
-		'delete' => 'deleted',	
-		'enablecolumns' => array(		
-			'disabled' => 'hidden',	
-			'starttime' => 'starttime',	
-			'endtime' => 'endtime',	
+		'sortby' => 'sorting',
+		'delete' => 'deleted',
+		'enablecolumns' => array(
+			'disabled' => 'hidden',
+			'starttime' => 'starttime',
+			'endtime' => 'endtime',
 			'fe_group' => 'fe_group',
 		),
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',

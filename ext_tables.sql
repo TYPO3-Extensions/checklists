@@ -24,7 +24,7 @@ CREATE TABLE tx_checklists_lists (
 	title varchar(255) DEFAULT '' NOT NULL,
 	description text,
 	groups text NOT NULL,
-	
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY t3ver_oid (t3ver_oid,t3ver_wsid)
@@ -61,7 +61,7 @@ CREATE TABLE tx_checklists_itemgroups (
 	items text NOT NULL,
 	parentid tinytext,
 	parenttable tinytext,
-	
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY t3ver_oid (t3ver_oid,t3ver_wsid)
@@ -97,7 +97,7 @@ CREATE TABLE tx_checklists_items (
 	description text,
 	parentid tinytext,
 	parenttable tinytext,
-	
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY t3ver_oid (t3ver_oid,t3ver_wsid)
@@ -126,6 +126,7 @@ CREATE TABLE tx_checklists_instances (
 	t3ver_count int(11) DEFAULT '0' NOT NULL,
 	t3ver_tstamp int(11) DEFAULT '0' NOT NULL,
 	t3_origuid int(11) DEFAULT '0' NOT NULL,
+	sorting int(10) DEFAULT '0' NOT NULL,
 	deleted tinyint(4) DEFAULT '0' NOT NULL,
 	hidden tinyint(4) DEFAULT '0' NOT NULL,
 	starttime int(11) DEFAULT '0' NOT NULL,
@@ -136,7 +137,7 @@ CREATE TABLE tx_checklists_instances (
 	results text,
 	status tinyint(4) DEFAULT '0' NOT NULL,
 	checklists_id int(11) DEFAULT '0' NOT NULL,
-	
+
 	PRIMARY KEY (uid),
 	KEY parent (pid),
 	KEY t3ver_oid (t3ver_oid,t3ver_wsid)

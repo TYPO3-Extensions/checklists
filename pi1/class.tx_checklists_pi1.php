@@ -78,20 +78,19 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	protected function listView() {
 			// Get the list of all checklist instances, for a given page or all
-		$where = '';
 		$referencePage = $GLOBALS['TSFE']->id;
 		if (!empty($this->cObj->data['pages'])) {
 			$referencePage = intval($this->cObj->data['pages']);
 		}
 		$where = 'pid = ' . $referencePage;
-		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'title');
+		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'sorting');
 			// Display the list of checklist instances
 		$instanceList = '';
 		foreach ($rows as $aRow) {
 			$GLOBALS['TSFE']->register['current_list_status'] = $aRow['status'];
 			$icon = $this->cObj->cObjGetSingle($this->conf['listView.']['statusDisplay'], $this->conf['listView.']['statusDisplay.']);
 			$link = $this->pi_linkTP($aRow['title'], array($this->prefixId.'[showUid]' => $aRow['uid']), 1);
-			$instanceList .= $this->cObj->stdWrap($icon.$link, $this->conf['listView.']['item.']);
+			$instanceList .= $this->cObj->stdWrap($icon . $link, $this->conf['listView.']['item.']);
 		}
 		$content = $this->cObj->stdWrap($instanceList, $this->conf['listView.']['allWrap.']);
 		return $content;
@@ -111,13 +110,11 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$instance = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', 'uid = ' . $id);
 		if (count($instance) == 0) {
 			// No record found or no translation, etc.
-		}
-		else {
+		} else {
 			$instanceInfo = $instance[0];
 			if (empty($instanceInfo['results'])) {
 				$results = array();
-			}
-			else {
+			} else {
 				$results = t3lib_div::xml2array($instanceInfo['results']);
 			}
 			$content .= '<h2>'.$instanceInfo['title'].'</h2>';
@@ -127,8 +124,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 //t3lib_div::debug($list, 'List');
 			if (count($list) == 0) {
 				// No record found or no translation, etc.
-			}
-			else {
+			} else {
 				$listInfo = $list[0];
 					// Get all the groups of the given checklist
 					// First check if the list was overlaid
@@ -160,8 +156,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 //t3lib_div::debug($items, 'Items');
 				if (count($items) == 0) {
 					// No record found or no translation, etc.
-				}
-				else {
+				} else {
 						// Group items by parent id, so that they can be related to their group easily
 						// We also build a list of items uid's (this is used further down)
 					$sortedItems = array();
@@ -287,7 +282,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 			// (this shouldn't happen normally)
 		if (empty($instanceInfo['results'])) {
 			$currentResults = array();
-		
+
 			// If yes, get the results as an array
 		} else {
 			$currentResults = t3lib_div::xml2array($instanceInfo['results']);

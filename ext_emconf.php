@@ -12,7 +12,7 @@
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 'Checklists',
-	'description' => 'Create repetitive checklists in the BE, instantiate them and fill them out in the FE.',
+	'description' => 'Create generic checklists in the BE, instantiate them and fill them out in the FE.',
 	'category' => 'plugin',
 	'author' => 'Francois Suter (Cobweb)',
 	'author_email' => 'typo3@cobweb.ch',
@@ -29,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array(
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '0.5.0',
+	'version' => '0.5.1',
 	'constraints' => array(
 		'depends' => array(
 			'typo3' => '4.3.0-0.0.0'
