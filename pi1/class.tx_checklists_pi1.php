@@ -242,6 +242,13 @@ class tx_checklists_pi1 extends tslib_pibase {
 		return $content;
 	}
 
+	/**
+	 * Changes the validation status of a given instance
+	 *
+	 * @param integer $instanceId Primary key of the checklist instance
+	 * @param boolean $checked TRUE if the instance has been validated, FALSE otherwise
+	 * @return void
+	 */
 	protected function validateInstance($instanceId, $checked) {
 			// Ensure proper data type
 		$instanceId = intval($instanceId);
