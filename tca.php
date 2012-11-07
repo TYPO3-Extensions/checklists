@@ -8,7 +8,7 @@ $TCA['tx_checklists_lists'] = array (
 	),
 	'feInterface' => $TCA['tx_checklists_lists']['feInterface'],
 	'columns' => array (
-		'sys_language_uid' => array (		
+		'sys_language_uid' => array (
 			'exclude' => 1,
 			'label'  => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
 			'config' => array (
@@ -21,7 +21,7 @@ $TCA['tx_checklists_lists'] = array (
 				)
 			)
 		),
-		'l18n_parent' => array (		
+		'l18n_parent' => array (
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
 			'exclude'     => 1,
 			'label'       => 'LLL:EXT:lang/locallang_general.xml:LGL.l18n_parent',
@@ -34,12 +34,12 @@ $TCA['tx_checklists_lists'] = array (
 				'foreign_table_where' => 'AND tx_checklists_lists.pid=###CURRENT_PID### AND tx_checklists_lists.sys_language_uid IN (-1,0)',
 			)
 		),
-		'l18n_diffsource' => array (		
+		'l18n_diffsource' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
@@ -47,27 +47,27 @@ $TCA['tx_checklists_lists'] = array (
 				'default' => 0
 			)
 		),
-		'title' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.title',		
+		'title' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.title',
 			'config' => array (
-				'type' => 'input',	
-				'size' => 30,	
+				'type' => 'input',
+				'size' => 30,
 				'eval' => 'required,trim',
 			)
 		),
-		'description' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.description',		
+		'description' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.description',
 			'config' => array (
 				'type' => 'text',
-				'cols' => 30,	
+				'cols' => 30,
 				'rows' => 5,
 			)
 		),
-		'groups' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.groups',		
+		'groups' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_lists.groups',
 			'config' => array (
 				'type' => 'inline',
 				'foreign_table' => 'tx_checklists_itemgroups',
@@ -106,7 +106,7 @@ $TCA['tx_checklists_itemgroups'] = array (
 	),
 	'feInterface' => $TCA['tx_checklists_itemgroups']['feInterface'],
 	'columns' => array (
-		'sys_language_uid' => array (		
+		'sys_language_uid' => array (
 			'exclude' => 1,
 			'label'  => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
 			'config' => array (
@@ -119,7 +119,7 @@ $TCA['tx_checklists_itemgroups'] = array (
 				)
 			)
 		),
-		'l18n_parent' => array (		
+		'l18n_parent' => array (
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
 			'exclude'     => 1,
 			'label'       => 'LLL:EXT:lang/locallang_general.xml:LGL.l18n_parent',
@@ -132,12 +132,12 @@ $TCA['tx_checklists_itemgroups'] = array (
 				'foreign_table_where' => 'AND tx_checklists_itemgroups.pid=###CURRENT_PID### AND tx_checklists_itemgroups.sys_language_uid IN (-1,0)',
 			)
 		),
-		'l18n_diffsource' => array (		
+		'l18n_diffsource' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
@@ -145,27 +145,27 @@ $TCA['tx_checklists_itemgroups'] = array (
 				'default' => 0
 			)
 		),
-		'title' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.title',		
+		'title' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.title',
 			'config' => array (
-				'type' => 'input',	
-				'size' => 30,	
+				'type' => 'input',
+				'size' => 30,
 				'eval' => 'required,trim',
 			)
 		),
-		'description' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.description',		
+		'description' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.description',
 			'config' => array (
 				'type' => 'text',
-				'cols' => 30,	
+				'cols' => 30,
 				'rows' => 5,
 			)
 		),
-		'items' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.items',		
+		'items' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_itemgroups.items',
 			'config' => array (
 				'type' => 'inline',
 				'foreign_table' => 'tx_checklists_items',
@@ -186,12 +186,12 @@ $TCA['tx_checklists_itemgroups'] = array (
 				)
 			)
 		),
-		'parentid' => array (		
+		'parentid' => array (
 			'config' => array (
 				'type' => 'passthrough',
 			)
 		),
-		'parenttable' => array (		
+		'parenttable' => array (
 			'config' => array (
 				'type' => 'passthrough',
 			)
@@ -214,7 +214,7 @@ $TCA['tx_checklists_items'] = array (
 	),
 	'feInterface' => $TCA['tx_checklists_items']['feInterface'],
 	'columns' => array (
-		'sys_language_uid' => array (		
+		'sys_language_uid' => array (
 			'exclude' => 1,
 			'label'  => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
 			'config' => array (
@@ -227,7 +227,7 @@ $TCA['tx_checklists_items'] = array (
 				)
 			)
 		),
-		'l18n_parent' => array (		
+		'l18n_parent' => array (
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
 			'exclude'     => 1,
 			'label'       => 'LLL:EXT:lang/locallang_general.xml:LGL.l18n_parent',
@@ -240,12 +240,12 @@ $TCA['tx_checklists_items'] = array (
 				'foreign_table_where' => 'AND tx_checklists_items.pid=###CURRENT_PID### AND tx_checklists_items.sys_language_uid IN (-1,0)',
 			)
 		),
-		'l18n_diffsource' => array (		
+		'l18n_diffsource' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
@@ -253,30 +253,30 @@ $TCA['tx_checklists_items'] = array (
 				'default' => 0
 			)
 		),
-		'title' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.title',		
+		'title' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.title',
 			'config' => array (
-				'type' => 'input',	
-				'size' => 30,	
+				'type' => 'input',
+				'size' => 30,
 				'eval' => 'required,trim',
 			)
 		),
-		'description' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.description',		
+		'description' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_items.description',
 			'config' => array (
 				'type' => 'text',
-				'cols' => 30,	
+				'cols' => 30,
 				'rows' => 5,
 			)
 		),
-		'parentid' => array (		
+		'parentid' => array (
 			'config' => array (
 				'type' => 'passthrough',
 			)
 		),
-		'parenttable' => array (		
+		'parenttable' => array (
 			'config' => array (
 				'type' => 'passthrough',
 			)
@@ -299,7 +299,7 @@ $TCA['tx_checklists_instances'] = array (
 	),
 	'feInterface' => $TCA['tx_checklists_instances']['feInterface'],
 	'columns' => array (
-		'sys_language_uid' => array (		
+		'sys_language_uid' => array (
 			'exclude' => 1,
 			'label'  => 'LLL:EXT:lang/locallang_general.xml:LGL.language',
 			'config' => array (
@@ -312,7 +312,7 @@ $TCA['tx_checklists_instances'] = array (
 				)
 			)
 		),
-		'l18n_parent' => array (		
+		'l18n_parent' => array (
 			'displayCond' => 'FIELD:sys_language_uid:>:0',
 			'exclude'     => 1,
 			'label'       => 'LLL:EXT:lang/locallang_general.xml:LGL.l18n_parent',
@@ -325,12 +325,12 @@ $TCA['tx_checklists_instances'] = array (
 				'foreign_table_where' => 'AND tx_checklists_instances.pid=###CURRENT_PID### AND tx_checklists_instances.sys_language_uid IN (-1,0)',
 			)
 		),
-		'l18n_diffsource' => array (		
+		'l18n_diffsource' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-		'hidden' => array (		
+		'hidden' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.hidden',
 			'config'  => array (
@@ -338,7 +338,7 @@ $TCA['tx_checklists_instances'] = array (
 				'default' => 0
 			)
 		),
-		'starttime' => array (		
+		'starttime' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.starttime',
 			'config'  => array (
@@ -350,7 +350,7 @@ $TCA['tx_checklists_instances'] = array (
 				'checkbox' => 0
 			)
 		),
-		'endtime' => array (		
+		'endtime' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.endtime',
 			'config'  => array (
@@ -366,67 +366,95 @@ $TCA['tx_checklists_instances'] = array (
 				)
 			)
 		),
-		'fe_group' => array (		
+		'fe_group' => array (
 			'exclude' => 1,
 			'label'   => 'LLL:EXT:lang/locallang_general.xml:LGL.fe_group',
 			'config'  => array (
 				'type'  => 'select',
+				'exclusiveKeys' => '-1,-2',
 				'items' => array (
-					array('', 0),
 					array('LLL:EXT:lang/locallang_general.xml:LGL.hide_at_login', -1),
 					array('LLL:EXT:lang/locallang_general.xml:LGL.any_login', -2),
 					array('LLL:EXT:lang/locallang_general.xml:LGL.usergroups', '--div--')
 				),
-				'foreign_table' => 'fe_groups'
+				'foreign_table' => 'fe_groups',
+				'size' => 5,
+				'maxitems' => 999
 			)
 		),
-		'title' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.title',		
+		'validated' => array (
+			'exclude' => 1,
+			'label'   => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.validated',
+			'config'  => array (
+				'type'    => 'check',
+				'default' => 0
+			)
+		),
+		'validated_on' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.validated_on',
 			'config' => array (
-				'type' => 'input',	
-				'size' => 30,	
+				'readOnly' => TRUE,
+				'type' => 'input',
+				'size' => 20,
+				'eval' => 'datetime',
+			)
+		),
+		'validated_by' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.validated_by',
+			'config' => array (
+				'readOnly' => TRUE,
+				'type' => 'input',
+				'size' => 30
+			)
+		),
+		'title' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.title',
+			'config' => array (
+				'type' => 'input',
+				'size' => 30,
 				'eval' => 'required,trim',
 			)
 		),
-		'notes' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.notes',		
+		'notes' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.notes',
 			'config' => array (
 				'type' => 'text',
-				'cols' => 30,	
+				'cols' => 30,
 				'rows' => 5,
 			)
 		),
-		'results' => array (		
+		'results' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-		'status' => array (		
+		'status' => array (
 			'config' => array (
 				'type' => 'passthrough'
 			)
 		),
-// TODO: add language condition in select config
-		'checklists_id' => array (		
-			'exclude' => 0,		
-			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.checklists_id',		
+		'checklists_id' => array (
+			'exclude' => 0,
+			'label' => 'LLL:EXT:checklists/locallang_db.xml:tx_checklists_instances.checklists_id',
 			'config' => array (
-				'type' => 'select',	
-				'foreign_table' => 'tx_checklists_lists',	
-				'foreign_table_where' => 'AND tx_checklists_lists.sys_language_uid IN (-1,0) ORDER BY tx_checklists_lists.uid',	
-				'size' => 1,	
+				'type' => 'select',
+				'foreign_table' => 'tx_checklists_lists',
+				'foreign_table_where' => 'AND tx_checklists_lists.sys_language_uid IN (-1,0) ORDER BY tx_checklists_lists.uid',
+				'size' => 1,
 				'minitems' => 0,
 				'maxitems' => 1,
 			)
 		),
 	),
 	'types' => array (
-		'0' => array('showitem' => 'sys_language_uid;;;;1-1-1, l18n_parent, l18n_diffsource, hidden;;1, title;;;;2-2-2, notes;;;;3-3-3, checklists_id')
+		'0' => array('showitem' => 'sys_language_uid, l18n_parent, l18n_diffsource, validated;;1, title, notes, checklists_id, --div--;LLL:EXT:cms/locallang_ttc.xml:tabs.access, hidden, starttime, endtime, fe_group')
 	),
 	'palettes' => array (
-		'1' => array('showitem' => 'starttime, endtime, fe_group')
+		'1' => array('showitem' => 'validated_on, validated_by')
 	)
 );
 ?>

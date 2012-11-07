@@ -111,6 +111,7 @@ $TCA['tx_checklists_instances'] = array(
 			'endtime' => 'endtime',
 			'fe_group' => 'fe_group',
 		),
+		'dividers2tabs' => TRUE,
 		'dynamicConfigFile' => t3lib_extMgm::extPath($_EXTKEY).'tca.php',
 		'iconfile'          => t3lib_extMgm::extRelPath($_EXTKEY).'icon_tx_checklists_instances.gif',
 	),

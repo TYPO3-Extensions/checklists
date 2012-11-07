@@ -19,6 +19,9 @@
 			<label index="tx_checklists_items.description">Description</label>
 			<label index="tx_checklists_instances">Checklists Instances</label>
 			<label index="tx_checklists_instances.title">Title</label>
+			<label index="tx_checklists_instances.validated">Validated</label>
+			<label index="tx_checklists_instances.validated_on">Validated on</label>
+			<label index="tx_checklists_instances.validated_by">Validated by</label>
 			<label index="tx_checklists_instances.notes">Notes</label>
 			<label index="tx_checklists_instances.checklists_id">Checklist</label>
 			<label index="tt_content.list_type_pi1">Checklists</label>
@@ -37,6 +40,9 @@
 			<label index="tx_checklists_items.description">Description</label>
 			<label index="tx_checklists_instances">Instances de checklists</label>
 			<label index="tx_checklists_instances.title">Titre</label>
+			<label index="tx_checklists_instances.validated">Validé</label>
+			<label index="tx_checklists_instances.validated_on">Validé le</label>
+			<label index="tx_checklists_instances.validated_by">Validé par</label>
 			<label index="tx_checklists_instances.notes">Notes</label>
 			<label index="tx_checklists_instances.checklists_id">Checklist</label>
 			<label index="tt_content.list_type_pi1">Checklists</label>

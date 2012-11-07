@@ -136,6 +136,9 @@ CREATE TABLE tx_checklists_instances (
 	notes text,
 	results text,
 	status tinyint(4) DEFAULT '0' NOT NULL,
+	validated tinyint(4) DEFAULT '0' NOT NULL,
+	validated_on int(11) DEFAULT '0' NOT NULL,
+	validated_by varchar(50) DEFAULT '' NOT NULL,
 	checklists_id int(11) DEFAULT '0' NOT NULL,
 
 	PRIMARY KEY (uid),

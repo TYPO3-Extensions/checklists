@@ -3,18 +3,7 @@ plugin.tx_checklists_pi1 {
 # Default setup for the list view
 
 	listView {
-		allWrap.wrap = <ul class="listView">|</ul>
-		item.wrap = <li>|</li>
-		statusDisplay = CASE
-		statusDisplay {
-			key.data = register:current_list_status
-			1 = IMAGE
-			1.file = EXT:checklists/res/icons/complete.png
-			1.params = class="statusIcon"
-			default = IMAGE
-			default.file = EXT:checklists/res/icons/incomplete.png
-			default.params = class="statusIcon"
-		}
+		template = EXT:checklists/Resources/Private/Templates/Checklist/List.html
 	}
 
 # Default setup for the single view
@@ -68,10 +57,13 @@ plugin.tx_checklists_pi1 {
 # Default styles
 
 	_CSS_DEFAULT_STYLE (
+		.tx-checklists-pi1 form.inlineForm {
+			display: inline;
+		}
 		.tx-checklists-pi1 ul.listView {
 			list-style: none;
 		}
-		.tx-checklists-pi1 .statusIcon {
+		.tx-checklists-pi1 ul li img {
 			vertical-align: middle;
 		}
 		.tx-checklists-pi1 .singleView td {

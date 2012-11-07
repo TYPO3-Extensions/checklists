@@ -49,9 +49,8 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	public function main($content, $conf) {
 		$this->conf = $conf;
-//		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
-//t3lib_div::debug($this->piVars);
+//t3lib_utility_Debug::debug($this->piVars);
 
 			// If a checklist form has been submitted (i.e. there is an "items" array), handle the results
 		if (isset($this->piVars['items']) || isset($this->piVars['uncheck'])) {
@@ -74,9 +73,15 @@ class tx_checklists_pi1 extends tslib_pibase {
 	/**
 	 * This method displays a list of all checklist instances
 	 *
-	 * @return	string	HTML content to display
+	 * @throws Exception
+	 * @return    string    HTML content to display
 	 */
 	protected function listView() {
+			// First handle any checkbox that might have been checked
+		if (!empty($this->piVars['instance'])) {
+			$this->validateInstance($this->piVars['instance'], $this->piVars['checked']);
+		}
+
 			// Get the list of all checklist instances, for a given page or all
 		$referencePage = $GLOBALS['TSFE']->id;
 		if (!empty($this->cObj->data['pages'])) {
@@ -84,15 +89,23 @@ class tx_checklists_pi1 extends tslib_pibase {
 		}
 		$where = 'pid = ' . $referencePage;
 		$rows = tx_overlays::getAllRecordsForTable('*', 'tx_checklists_instances', $where, '', 'sorting');
-			// Display the list of checklist instances
-		$instanceList = '';
-		foreach ($rows as $aRow) {
-			$GLOBALS['TSFE']->register['current_list_status'] = $aRow['status'];
-			$icon = $this->cObj->cObjGetSingle($this->conf['listView.']['statusDisplay'], $this->conf['listView.']['statusDisplay.']);
-			$link = $this->pi_linkTP($aRow['title'], array($this->prefixId.'[showUid]' => $aRow['uid']), 1);
-			$instanceList .= $this->cObj->stdWrap($icon . $link, $this->conf['listView.']['item.']);
+
+			// Assemble the content using a FLUID template
+		$filePath = t3lib_div::getFileAbsFileName($this->conf['listView.']['template']);
+		if (is_file($filePath)) {
+
+				// Instantiate a Fluid stand-alone view and load the template file
+				/** @var $view Tx_Fluid_View_StandaloneView */
+			$view = t3lib_div::makeInstance('Tx_Fluid_View_StandaloneView');
+			$view->setTemplatePathAndFilename($filePath);
+				// Assign the list of checklist instances
+			$view->assign('checklists', $rows);
+				// Render the result
+			$content = $view->render();
+		} else {
+			throw new Exception('No template file has been found in: ' . $filePath, 1352303318);
 		}
-		$content = $this->cObj->stdWrap($instanceList, $this->conf['listView.']['allWrap.']);
+
 		return $content;
 	}
 
@@ -227,6 +240,37 @@ class tx_checklists_pi1 extends tslib_pibase {
 			// Add back to instance list link
 		$content .= $this->cObj->stdWrap($this->pi_linkTP($this->pi_getLL('back_to_list')), $this->conf['singleView.']['backlink.']);
 		return $content;
+	}
+
+	protected function validateInstance($instanceId, $checked) {
+			// Ensure proper data type
+		$instanceId = intval($instanceId);
+		$checked = (boolean)$checked;
+			// Update corresponding instance
+		if ($instanceId > 0) {
+			$user = '';
+			if (isset($GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column])) {
+				$user = $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column];
+			}
+			$date = time();
+				// Change the timestamp anyway
+			$fields = array(
+				'tstamp' => $date,
+			);
+				// Mark as validated
+			if ($checked) {
+				$fields['validated'] = TRUE;
+				$fields['validated_by'] = $user;
+				$fields['validated_on'] = $date;
+
+				// Mark as invalidated
+			} else {
+				$fields['validated'] = FALSE;
+				$fields['validated_by'] = '';
+				$fields['validated_on'] = '';
+			}
+			$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_checklists_instances', 'uid = ' . $instanceId, $fields);
+		}
 	}
 
 	/**
