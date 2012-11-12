@@ -5,19 +5,23 @@
 				<input type="hidden" name="tx_checklists_pi1[instance]" value="{list.uid}" />
 				<input type="checkbox" name="tx_checklists_pi1[checked]" value="1" {f:if(condition: list.validated, then: 'checked="checked"', else: '')} onclick="this.form.submit()" />
 			</form>
-			<f:if condition="{list.status}">
-				<f:then>
-					<f:image src="EXT:checklists/Resources/Public/Images/Complete.png" width="16" height="16" alt="OK" />
-				</f:then>
-				<f:else>
-					<f:image src="EXT:checklists/Resources/Public/Images/Incomplete.png" width="16" height="16" alt="Not OK" />
-				</f:else>
-			</f:if>
-			<f:link.page additionalParams="{tx_checklists_pi1: {showUid: list.uid}}">
-				{list.title}
-			</f:link.page>
+			<span class="icon">
+				<f:if condition="{list.status}">
+					<f:then>
+						<f:image src="EXT:checklists/Resources/Public/Images/Complete.png" width="16" height="16" alt="OK" />
+					</f:then>
+					<f:else>
+						<f:image src="EXT:checklists/Resources/Public/Images/Incomplete.png" width="16" height="16" alt="Not OK" />
+					</f:else>
+				</f:if>
+			</span>
+			<span class="title">
+				<f:link.page additionalParams="{tx_checklists_pi1: {showUid: list.uid}}">
+					{list.title}
+				</f:link.page>
+			</span>
 			<f:if condition="{list.validated}">
-				<br />{list.validated_by} (<f:format.date format="d.m.Y - H:i:s">@{list.validated_on}</f:format.date>)
+				<br /><span class="completed">{list.validated_by} (<f:format.date format="d.m.Y - H:i:s">@{list.validated_on}</f:format.date>)</span>
 			</f:if>
 		</li>
 	</f:for>
