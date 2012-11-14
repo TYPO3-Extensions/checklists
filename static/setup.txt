@@ -44,7 +44,7 @@ plugin.tx_checklists_pi1 {
 			description {
 				dataWrap = <em><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></em>
 				required = 1
-				br = 1
+				doubleBrTag = <br />
 			}
 			user {
 				wrap = |
