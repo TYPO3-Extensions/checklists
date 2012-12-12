@@ -52,8 +52,8 @@ class tx_checklists_pi1 extends tslib_pibase {
 		$this->pi_loadLL();
 //t3lib_utility_Debug::debug($this->piVars);
 
-			// If a checklist form has been submitted (i.e. there is an "items" array), handle the results
-		if (isset($this->piVars['items']) || isset($this->piVars['uncheck'])) {
+			// If a checklist form has been submitted, handle the results
+		if (isset($this->piVars['submit'])) {
 			$this->saveChecks();
 		}
 
@@ -201,15 +201,19 @@ class tx_checklists_pi1 extends tslib_pibase {
 									// Initialize item status
 								$isDone = 0;
 								$user = '';
+								$checked = '';
 								if (isset($results[$anItem['uid']])) {
 									$isDone = $results[$anItem['uid']]['status'];
 									$user = $results[$anItem['uid']]['user'];
+									$checked = ($results[$anItem['uid']]['status']) ? 'checked="checked"' : '';
 								}
 									// Load some registers used during rendering
 								$GLOBALS['TSFE']->register['item_uid'] = $anItem['uid'];
+								$GLOBALS['TSFE']->register['item_checked'] = $checked;
 								$GLOBALS['TSFE']->register['current_item_status'] = $isDone;
 									// Render content for each marker
-								$itemMarkers['###CHECKBOX###'] = $this->cObj->stdWrap($isDone, $this->conf['singleView.']['item.']['checkbox.']);
+								$itemMarkers['###CHECKBOX###'] = $this->cObj->cObjGetSingle($this->conf['singleView.']['item.']['checkbox'], $this->conf['singleView.']['item.']['checkbox.']);
+/*
 								if ($isDone) {
 									$uncheckLink = $this->pi_linkTP($this->pi_getLL('uncheck'), array($this->prefixId.'[showUid]' => $id, $this->prefixId.'[uncheck]' => $anItem['uid']), 1);
 									$itemMarkers['###UNCHECK###'] = $this->cObj->stdWrap($uncheckLink, $this->conf['singleView.']['item.']['uncheck.']);
@@ -217,9 +221,11 @@ class tx_checklists_pi1 extends tslib_pibase {
 								else {
 									$itemMarkers['###UNCHECK###'] = '';
 								}
+*/
 								$itemMarkers['###TITLE###'] = $this->cObj->stdWrap($anItem['title'], $this->conf['singleView.']['item.']['title.']);
 								$itemMarkers['###DESCRIPTION###'] = $this->cObj->stdWrap($anItem['description'], $this->conf['singleView.']['item.']['description.']);
 								$itemMarkers['###USER###'] = $this->cObj->stdWrap($user, $this->conf['singleView.']['item.']['user.']);
+								$itemMarkers['###COMMENT###'] = '<div class="comments"><textarea name="' . $this->prefixId.'[comments][' . $anItem['uid'] . ']" cols="60">' . strip_tags($results[$anItem['uid']]['comments']) . '</textarea></div>';
 									// Assemble the content for the group
 								$groupContent .= $this->cObj->substituteMarkerArray($this->conf['singleView.']['item.']['layout'], $itemMarkers);
 							}
@@ -326,7 +332,7 @@ class tx_checklists_pi1 extends tslib_pibase {
 	 */
 	protected function saveChecks() {
 			// First, get the checklist instance record for updating it
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', "uid = '".$this->piVars['showUid']."'");
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_checklists_instances', 'uid = ' . intval($this->piVars['showUid']));
 		$instanceInfo = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res);
 			// Get the results that were already stored for that list
 			// First check if the results list hasn't been initialised beforehand
@@ -338,33 +344,39 @@ class tx_checklists_pi1 extends tslib_pibase {
 		} else {
 			$currentResults = t3lib_div::xml2array($instanceInfo['results']);
 		}
-			// If a user is logged it, take its username
+			// If a user is logged in, take its username
 		$user = '';
 		if (isset($GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column])) {
 			$user = $GLOBALS['TSFE']->fe_user->user[$GLOBALS['TSFE']->fe_user->username_column];
 		}
-			// Loop on all submitted checkboxes and set them to done
-		if (isset($this->piVars['items'])) {
-			foreach ($this->piVars['items'] as $uid => $value) {
-				$currentResults[$uid] = array('status' => 1, 'user' => $user);
-			}
-				// Check if all items have been completed
-			$numItems = count($currentResults);
-			$numItemsDone = 0;
-			foreach ($currentResults as $itemInfo) {
-				if ($itemInfo['status'] == 1) $numItemsDone++;
-			}
-			$status = 0;
-			if ($numItemsDone == $numItems) {
+			// Loop on all fields, add or remove comments,
+			// change status depending on whether the corresponding checkbox was checked or not
+		foreach ($this->piVars['comments'] as $uid => $value) {
+			if (empty($this->piVars['items'][$uid])) {
+				$status = 0;
+				$actingUser = '';
+			} else {
 				$status = 1;
+				$actingUser = $user;
 			}
-
-			// Uncheck the designated item
-		} elseif (isset($this->piVars['uncheck'])) {
-			$currentResults[$this->piVars['uncheck']] = array('status' => 0, 'user' => '');
-				// Set the general status to 0
-				// (if an item has been unchecked, the whole list cannot possibly be complete)
-			$status = 0;
+				// Update the item's info
+			$currentResults[$uid] = array(
+				'status' => $status,
+				'user' => $actingUser,
+				'comments' => $value
+			);
+		}
+			// Check if all items have been completed
+		$numItems = count($currentResults);
+		$numItemsDone = 0;
+		foreach ($currentResults as $itemInfo) {
+			if ($itemInfo['status'] == 1) {
+				$numItemsDone++;
+			}
+		}
+		$status = 0;
+		if ($numItemsDone == $numItems) {
+			$status = 1;
 		}
 			// Save result to checklist instance and translation
 		$updates = array('results' => t3lib_div::array2xml($currentResults), 'status' => $status);

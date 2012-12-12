@@ -20,29 +20,15 @@ plugin.tx_checklists_pi1 {
 			description.required = 1
 		}
 		item {
-			layout = <tr class="item"><td>###CHECKBOX###<br />###UNCHECK###</td><td>###TITLE######DESCRIPTION###</td><td>###USER###</td></tr>
+			layout = <tr class="item"><td>###CHECKBOX###</td><td>###TITLE######DESCRIPTION######COMMENT###</td><td>###USER###</td></tr>
+			checkbox = TEXT
 			checkbox {
-				cObject = CASE
-				cObject {
-					1 = IMAGE
-					1 {
-						file = EXT:checklists/res/icons/complete.png
-						params = class="statusIcon"
-					}
-					default = TEXT
-					default {
-						value = <input type="checkbox" name="tx_checklists_pi1[items][{register:item_uid}]" id="tx_checklists_pi1_items_{register:item_uid}" value="1" />
-						insertData = 1
-					}
-					key.data = register:current_item_status
-				}
+				value = <input type="checkbox" name="tx_checklists_pi1[items][{register:item_uid}]" id="tx_checklists_pi1_items_{register:item_uid}" value="1" {register:item_checked} />
+				insertData = 1
 			}
-			uncheck {
-				wrap = [|]
-			}
-			title.dataWrap = <strong><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></strong><br />
+			title.dataWrap = <div class="item-title"><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></div>
 			description {
-				dataWrap = <em><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></em>
+				dataWrap = <div class="item-description"><label for="tx_checklists_pi1_items_{register:item_uid}">|</label></div>
 				required = 1
 				doubleBrTag = <br />
 			}
